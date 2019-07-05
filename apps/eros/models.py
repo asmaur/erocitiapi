@@ -394,7 +394,7 @@ class ChangePasseCode(models.Model):
     end_at = models.DateTimeField(blank=True)
 
     def active(self):
-        if self.end_date > self.end_at:
+        if self.end_date > self.created_at:
             return True
         else:
             return False

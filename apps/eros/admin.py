@@ -17,6 +17,9 @@ admin.site.register(Video)
 
 admin.site.register(PerfilViewCount)
 admin.site.register(PerfilNumberClick)
-admin.site.register(ChangePasseCode)
 
 admin.site.register(Transactions)
+
+@admin.register(ChangePasseCode)
+class ChangePasseCodeAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'active']

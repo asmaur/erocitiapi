@@ -96,15 +96,15 @@ WSGI_APPLICATION = 'eroapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
-        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': config('DB_NAME'),
-        #'USER': config('DB_USER'),
-        #'PASSWORD': config('DB_PASSWORD'),
-        #'HOST': config('DB_HOST'),
-        #'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': '',
     }
 }
 
@@ -163,11 +163,10 @@ DEFAULT_FONT = os.path.join(BASE_DIR, 'static/fonts/OpenSans-Italic.ttf')
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = (
 
-    'localhost:8000',
-    '127.0.0.1:8001'
-)
+
+CORS_ORIGIN_WHITELIST = config('CORS_ORIGIN_WHITELIST', cast=Csv())
+
 #CORS_URLS_REGEX = r'^/api/.*$'
 
 
@@ -178,9 +177,9 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
-DEFAULT_FROM_EMAIL = 'Parsifal Team <noreply@parsif.al>'
-EMAIL_SUBJECT_PREFIX = '[Parsifal] '
-SERVER_EMAIL = 'application@parsif.al'
+#DEFAULT_FROM_EMAIL = 'Parsifal Team <noreply@parsif.al>'
+#EMAIL_SUBJECT_PREFIX = '[Parsifal] '
+#SERVER_EMAIL = 'application@parsif.al'
 
 PAGSEGURO_EMAIL = config('PAGSEGURO_EMAIL')
 PAGSEGURO_TOKEN = config('PAGSEGURO_TOKEN')

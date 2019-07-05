@@ -99,6 +99,98 @@ class LoginViewset(viewsets.ModelViewSet):
         print(request.user)
         logout(request)
         return Response({"message": "logout realizado com successo."}, status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=False, methods=['POST'])
+    def password_code(self, request, ):
+        from django.conf import settings
+        try:
+            email = request.data['email']
+            user = User.objects.get(email=email)
+        except Exception as ex:
+            user = None
+
+        if( user is not None):
+            try:
+                code = uuid.uuid4()
+                email = request.data['email']
+                end_at = timezone.now() + timedelta(days=1)
+
+                subject = "Recuperação de senha"
+                to_user = [email, ]
+                from_email = settings.EMAIL_HOST_USER
+
+                ctx = {'code': code,}
+
+                html = get_template('api/mail/email.html')
+                message = html.render(ctx)
+                msg = EmailMultiAlternatives(subject, message, to=to_user, from_email=from_email)
+                msg.attach_alternative(message, "text/html")
+                msg.send()
+                ChangePasseCode.objects.create(code=code, email=email, end_at=end_at)
+
+                return Response({"message": "Um link para recuperação da sua senha foi enviado ao seu email.!"},
+                                status.HTTP_200_OK)
+            except Exception as ex:
+                #print(ex)
+                return Response({"message": "Algo deu errado. Não foi possivel enviar o link ao seu endereço de email. Tente mais tarde!"},
+                                status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message": "Não há usúario com este email. Realize seu cadastro agora mesmo."})
+
+
+    @action(detail=False, methods=["POST"])
+    def check_code(self, request):
+        code = request.data['code']
+
+        try:
+            change_pass = ChangePasseCode.objects.get(code=code)
+        except:
+            change_pass = None
+
+        if(change_pass is not None):
+            if(change_pass.active):
+                return Response({"success": True}, status.HTTP_200_OK)
+            else:
+                return Response({"success": False}, status.HTTP_200_OK)
+        else:
+            return Response({"success": False}, status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['POST'])
+    def change_password(self, request, ):
+        passw = request.data['password']
+        passconf = request.data['confirm_password']
+        code = request.data['code']
+
+        try:
+            change_pass = ChangePasseCode.objects.get(code=code)
+        except:
+            change_pass = None
+
+        if (change_pass is not None):
+
+            if (change_pass.active):
+
+                try:
+                    print(passconf, passw)
+                    user = User.objects.get(email=change_pass.email)
+
+                    if (passw == passconf):
+
+                        user.set_password(passconf)
+                        return Response({"message": "A sua senha foi atualizado, tente logar na sua conta."},
+                                        status.HTTP_200_OK)
+                    else:
+                        return Response({"message": "As senhas não correspondem."}, status.HTTP_400_BAD_REQUEST)
+
+                except Exception as ex:
+                    print(ex)
+                    return Response({"message": "Não há usúario com este email cadastrado."}, status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"message": "Código de ativação inválido."}, status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({"message": "Esse código de renovação não existe mais."}, status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -136,55 +228,7 @@ class UserViewset(viewsets.ViewSet):
             return Response({"success": True, "message": "Usuário removido com sucesso"}, status=status.HTTP_200_OK)
         return Response({"success": False, "message": "Erro ao remover usuário. Tente novamente"}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['POST'])
-    def password_code(self, request,):
-        code = uuid.uuid4()
-        email = request.data['email']
-        end_at = dt.datetime.today() + timedelta(days=1)
-
-        ChangePasseCode.objects.create(code=code, email=email, end_at=end_at)
-
-        subject = "Recuperação de senha"
-        to = ['buddy@buddylindsey.com']
-        from_email = 'test@example.com'
-
-        ctx = {
-            'code': code,
-        }
-
-        message = get_template('main/email/email.html').render(Context(ctx))
-        msg = EmailMessage(subject, message, to=to, from_email=from_email)
-        msg.content_subtype = 'html'
-        msg.send()
-
-        return Response({"message":"Um link para recuperação da sua senha foi enviado ao seu email.!"}, status.HTTP_200_OK)
-
-    @action(detail=False, methods=['POST'])
-    def change_password(self, request,):
-        passw = request.data['password']
-        passconf = request.data['confirm_password']
-        code = request.data['code']
-
-        try:
-            change_pass = ChangePasseCode.objects.get(code=code)
-        except:
-            change_pass = None
-
-        if(change_pass is not None):
-
-            if(change_pass.active):
-                if(passw == passconf):
-                    user = User.objects.get(email=change_pass.email)
-                    user.set_password(passconf)
-                    return Response({"message":"A sua senha foi atualizado, tente logar na sua conta."}, status.HTTP_200_OK)
-                else:
-                    return Response({"message": "As senhas não correspondem."}, status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({"message":"Código de ativação inválido."}, status.HTTP_400_BAD_REQUEST)
-
-        else:
-            return Response({"message": "Esse código de renovação não existe mais."}, status.HTTP_400_BAD_REQUEST)
-
+    
 
 
 class AgenteViewset(viewsets.ViewSet):
