@@ -9,10 +9,11 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.authentication import TokenAuthentication
 import json, uuid
 import datetime as dt
+from django.conf import settings
 
 from django.template import Context
 from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 
 
 #pagseguro
@@ -102,7 +103,7 @@ class LoginViewset(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['POST'])
     def password_code(self, request, ):
-        from django.conf import settings
+
         try:
             email = request.data['email']
             user = User.objects.get(email=email)
@@ -117,7 +118,7 @@ class LoginViewset(viewsets.ModelViewSet):
 
                 subject = "Recuperação de senha"
                 to_user = [email, ]
-                from_email = settings.EMAIL_HOST_USER
+                from_email = settings.DEFAULT_FROM_EMAIL
 
                 ctx = {'code': code,}
 
