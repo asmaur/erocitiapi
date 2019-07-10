@@ -128,8 +128,8 @@ class Perfil(models.Model):
     is_working = models.BooleanField(default=True)
 
 
-    #default = models.Manager()
-    #objects = PerfilWorkingManager()
+    objects = models.Manager()
+    objects_working = PerfilWorkingManager()
 
     class Meta:
         verbose_name = 'Perfil'
