@@ -364,7 +364,7 @@ class PerfilViewset(viewsets.ViewSet):
                     return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_201_CREATED)
 
 
-        except ValueError:
+        except Exception as ex:
                 return Response({"success": False, "message":"Algo deu errado, tente novamente."}, status.HTTP_400_BAD_REQUEST)
                 
         #return Response({"success": True, "message": "Perfil criado com successo"}, status=status.HTTP_201_OK)
