@@ -285,11 +285,17 @@ class AgenteViewset(viewsets.ViewSet):
 
     @action(detail=True,)
     def perfis(self, request, pk=None):
-        queryset = Perfil.objects_active.all().filter(owner__pk=int(pk))
-        #print(queryset)
-        serializer = PerfilSerializer(queryset, many=True, context={'request': request})
+        try:
+            queryset = Perfil.objects_active.all().filter(owner__pk=int(pk))
+        except Exception as ex:
+            queryset = None
 
-        return Response(serializer.data)
+        if(queryset):
+            #print(queryset)
+            serializer = PerfilSerializer(queryset, many=True, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response([])
 
 
 
