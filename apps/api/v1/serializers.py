@@ -198,7 +198,7 @@ class PerfilDetailSerializer(serializers.ModelSerializer):
     city = CityDetailSerializer()
     class Meta:
         model = Perfil
-        fields = ('pk', 'code', 'category', 'nome', 'sobrenome', 'slug', 'idade', 'peso', 'altura', 'city', 'phone', 'capa', 'is_active', 'is_working', 'is_vip', 'images', 'dados', 'services', 'especiais', 'locais', 'valores', 'description')
+        fields = ('pk', 'code', 'category', 'nome', 'sobrenome', 'slug', 'idade', 'peso', 'altura', 'city', 'phone', 'capa', 'is_working', 'is_vip', 'images', 'dados', 'services', 'especiais', 'locais', 'valores', 'description')
 
 
 
