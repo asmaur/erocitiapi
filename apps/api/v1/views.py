@@ -283,9 +283,9 @@ class AgenteViewset(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         pass
 
-    @action(detail=True,)
+    @action(detail=True, methods=["GET"])
     def perfis(self, request, pk=None):
-        queryset = Perfil.objects_active.all().filter(owner__pk=int(pk))
+        queryset = Perfil.objects.all().filter(owner__pk=int(pk))
 
         #print(queryset)
         serializer = PerfilSerializer(queryset, many=True, context={'request': request})
@@ -299,7 +299,7 @@ class PerfilViewset(viewsets.ViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     def list(self, request):
-        queryset = Perfil.objects_active.all()
+        queryset = Perfil.objects.all()
         serializer = PerfilSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
