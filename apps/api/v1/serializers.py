@@ -206,8 +206,8 @@ class PerfilDetailSerializer(serializers.ModelSerializer):
 class PerfilSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perfil
-        fields = ('pk', 'code', 'nome', 'sobrenome',  'category', 'idade', 'peso', 'altura', 'city', 'phone', 'slug', 'capa', 'is_active', 'is_working', 'is_vip', 'description')# 'owner')
-        read_only_fields = ["id", "owner", "code", 'is_vip', 'city', 'is_active',]
+        fields = ('pk', 'code', 'nome', 'sobrenome',  'category', 'idade', 'peso', 'altura', 'city', 'phone', 'slug', 'capa', 'is_working', 'is_vip', 'description')# 'owner')
+        read_only_fields = ["id", "owner", "code", 'is_vip', 'city', ]
 
 
         def update(self, instance, validated_data):
