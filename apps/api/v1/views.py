@@ -272,9 +272,9 @@ class AgenteViewset(viewsets.ViewSet):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success": True, "message": "Os dados foram atualizados"}, status=status.HTTP_200_OK)
+            return Response({"message": "Os dados foram atualizados"}, status=status.HTTP_200_OK)
 
-        return Response({"success": False, "message": "Algo deu errado ao atualizar os dados"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Algo deu errado ao atualizar os dados"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def partial_update(self, request, pk=None):
