@@ -247,4 +247,17 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = ('pk', 'code', 'membership', 'perfil', 'active')
 
 
+class MiniSubscriptionSerializer(serializers.ModelSerializer):
 
+    #perfil = PerfilSerializer(read_only=True)
+    membership = MemberShipSerializer(read_only=True)
+    class Meta:
+        model = Subscription
+        fields = ('pk', 'code', 'membership', 'end_date', 'active')
+
+class BalanceSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = UserBalance
+        fields = ('id', 'amount', 'created_date', 'user')

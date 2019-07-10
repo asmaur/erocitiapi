@@ -403,6 +403,14 @@ class ChangePasseCode(models.Model):
         return self.email
 
 
+class NewsLettersAds(models.Model):
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
+
+
 @receiver(pre_save, sender=Perfil)
 def perfil_pre_save(sender, **kwargs):
     perfil = kwargs.get('instance')

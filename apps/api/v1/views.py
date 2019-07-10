@@ -9,6 +9,7 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.authentication import TokenAuthentication
 import json, uuid
 import datetime as dt
+from decimal import Decimal
 from django.conf import settings
 
 from django.template import Context
@@ -192,6 +193,18 @@ class LoginViewset(viewsets.ModelViewSet):
         else:
             return Response({"message": "Esse código de renovação não existe mais."}, status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['POST'])
+    def adsnewsletter(self, request):
+        try:
+            email = request.data["email"]
+            news = NewsLettersAds(email=email)
+            news.save()
+            return Response({
+                                "message": "Seu email foi salvo com successo. Será notificado no lançamento da plataforma. Obrigado pela confiança.!"},
+                            status.HTTP_200_OK)
+        except Exception as ex:
+            return Response({"message": "Não foi possível salvar seu email. Tente novamente mais tarde."},
+                            status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -807,9 +820,9 @@ class MemberViewset(viewsets.ViewSet):
             return Response({"message": "Infelizmente, Não foi desta vez. Solicite mais tarde !"}, status.HTTP_200_OK)
 
 
+
 class PaymentViewset(viewsets.ViewSet):
     queryset = Membership.objects.all()
-
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -818,23 +831,27 @@ class PaymentViewset(viewsets.ViewSet):
         random = string.ascii_uppercase + string.ascii_lowercase + string.digits
         return ''.join(choice(random) for _ in range(n))
 
-
     @action(detail=False, methods=["POST"])
     def checkout(self, request):
-        #print(request.data)
-        pagseguro_api = PagSeguroApi(currency=request.data["currency"], reference=request.data["reference"], senderEmail = request.data["senderEmail"], senderName = request.data["senderName"], senderAreaCode = request.data["senderAreaCode"], senderPhone = "654679872", shipping_cost=0)#request.data["senderPhone"])
-        item1 = PagSeguroItem(id=request.data["itemId"], description=request.data["itemDescription"], amount=request.data["itemAmount"], quantity=request.data["itemQuantity"], )
+        # print(request.data)
+        pagseguro_api = PagSeguroApi(currency=request.data["currency"], reference=request.data["reference"],
+                                         senderEmail=request.data["senderEmail"], senderName=request.data["senderName"],
+                                         senderAreaCode=request.data["senderAreaCode"],
+                                         senderPhone=request.data["senderPhone"],
+                                         shipping_cost=0)  # request.data["senderPhone"])
+        item1 = PagSeguroItem(id=request.data["itemId"], description=request.data["itemDescription"],
+                                  amount=request.data["itemAmount"], quantity=request.data["itemQuantity"], )
 
         pagseguro_api.add_item(item1)
         data = pagseguro_api.checkout()
         return Response(data)
 
     @action(detail=False, methods=["POST"])
-    def transactions(self, request,):
+    def transactions(self, request, ):
         print(request.data)
         perId = request.data["perId"]
         userId = request.data["userId"]
-        planoId =  request.data["planoId"]
+        planoId = request.data["planoId"]
         transactionCode = request.data["transactionCode"]
         tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
 
@@ -852,45 +869,132 @@ class PaymentViewset(viewsets.ViewSet):
                 user = User.objects.get(pk=userId)
                 created_date = dt.datetime.today()
                 end_date = dt.datetime.today() + timedelta(days=int(plano.valide_time))
-                Subscription.objects.create(types=tipo.index(plano.membership_type), code=data["transaction"]["code"], user=user, membership=plano, perfil=perfil, created_date=created_date, end_date=end_date, count=1)
+                Subscription.objects.create(types=tipo.index(plano.membership_type),
+                                                code=data["transaction"]["code"], user=user, membership=plano,
+                                                perfil=perfil, created_date=created_date, end_date=end_date, count=1)
                 return Response({"message": "Obrigado pela sua compra."}, status.HTTP_201_CREATED)
-        # 4BF9CC18-6F63-4DDF-9BB9-637D5E540F28
+                # 4BF9CC18-6F63-4DDF-9BB9-637D5E540F28
             elif data["transaction"]["status"] in ["1", "2", "4"]:
-                #perfil = Perfil.objects.get(pk=perId)
-                #plano = Membership.objects.get(pk=planoId)
-                #user = User.objects.get(pk=userId)
-                #Subscription.objects.create(types=tipo.index(plano.membership_type), code=data["transaction"]["code"], user=user, membership=plano, perfil=perfil, count=1)
-                Transactions.objects.create(perId = perId , userId = userId, planoId = planoId, transactionCode = transactionCode)
 
-                return Response({"message": "Obrigado por comprar o plano, Aguardamos a aprovação do pagamento."}, status.HTTP_200_OK)
+                Transactions.objects.create(perId=perId, userId=userId, planoId=planoId,
+                                                transactionCode=transactionCode)
+
+                return Response({"message": "Obrigado por comprar o plano, Aguardamos a aprovação do pagamento."},
+                                    status.HTTP_200_OK)
 
         return Response({"message": "Algo deu errado"})
-
-
 
     @action(detail=False, methods=["POST"])
     def notifications(self, request):
         pagseguro_api = PagSeguroApi()
-        tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
+        # tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
 
         try:
             transactionCode = request.data["transactionCode"]
             data = pagseguro_api.get_transaction(transactionCode)
-
-            transp = Transactions.objects.get(transactionCode=data["transaction"]["code"])
+            print(data)
+            email = data["transaction"]["sender"]["email"]
+            valor = data["transaction"]["grossAmount"]
 
             if data["transaction"]["status"] == "3":
-                perfil = Perfil.objects.get(pk=transp.perId)
-                plano = Membership.objects.get(pk=transp.planoId)
-                user = User.objects.get(pk=transp.userId)
-                created_date = dt.datetime.today()
-                end_date = dt.datetime.today() + timedelta(days=int(plano.valide_time))
-                Subscription.objects.create(types=tipo.index(plano.membership_type), code=data["transaction"]["code"], user=user, membership=plano, perfil=perfil, created_date=created_date, end_date=end_date, count=1)
+                user = User.objects.get(email="kassaw@gmail.com")  # email)
+                # agente = Agente.objects.get(user=user)
+                ubalance = UserBalance.objects.get(user=user)
+                ubalance.amount += Decimal(valor)
+                # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
+                ubalance.save()
 
-                return Response({"message":"OK"}, status.HTTP_200_OK)
+                return Response({"message": "OK"}, status.HTTP_200_OK)
 
-        except:
-            return Response({"message":"NO"}, status.HTTP_200_OK)
+        except Exception as ex:
+            print(ex)
+            return Response({"message": "NO"}, status.HTTP_200_OK)
 
-        return Response({"message":"NO"}, status.HTTP_200_OK)
+        return Response({"message": "NO"}, status.HTTP_200_OK)
+
+    @action(methods=["POST"], detail=False)
+    def setplanos(self, request):
+        tipo = ["Diamond", "Destaque", "Top", "Basic"]
+        try:
+            user = User.objects.get(pk=request.data["userId"])
+            balance = UserBalance.objects.get(user=user)
+        except Exception as ex:
+            # print(ex)
+            balance = None
+
+        if balance is not None:
+
+            try:
+
+                data = request.data
+                perfil = Perfil.objects.get(pk=data["perId"])
+                plano = Membership.objects.get(pk=data["planoId"])
+                # print(plano.price)
+
+                if (balance.amount > plano.price):
+                    created_date = timezone.now()
+                    end_date = timezone.now() + timedelta(days=int(plano.valide_time))
+                    Subscription.objects.create(types=tipo.index(plano.membership_type), code=uuid.uuid4(),
+                                                    user=user, membership=plano, perfil=perfil,
+                                                    created_date=created_date,
+                                                    end_date=end_date, count=1)
+                    new_amount = balance.amount - plano.price
+                    balance.amount = new_amount
+                    balance.save()
+                    return Response({"message": "O plano foi adicionado ao perfil com sucesso. Atualize a página."},
+                                        status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Crédito insuficiente"}, status.HTTP_400_BAD_REQUEST)
+
+            except Exception as ex:
+                # print(ex)
+                return Response({"message": "Algo deu errado, tente novamente mais tarde."},
+                                    status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message": "Desculpe, Algo deu errado. tente novamente mais tarde"},
+                                status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["POST"], detail=False)
+    def renovar(self, request):
+        data = request.data
+
+        try:
+            data = request.data
+            # perfil = Perfil.objects.get(pk=data["perId"])
+            plano = Membership.objects.get(pk=data["planoId"])
+            subs = Subscription.objects.get(code=data["code"])
+            balance = UserBalance.objects.get(user=subs.user)
+
+            if (balance.amount > plano.price):
+
+                created = timezone.now()
+
+                new_end_date = subs.end_date + timedelta(days=int(plano.valide_time))
+                new_count = subs.count + 1
+                subs.created_at = created
+                subs.end_date = new_end_date
+                subs.count = new_count
+                subs.save()
+
+                new_amount = balance.amount - plano.price
+                balance.amount = new_amount
+                balance.save()
+
+                return Response({"message": "O seu plano foi renovado com sucesso"}, status.HTTP_200_OK)
+            else:
+                return Response({"message": "Não foi possível renovar seu plano. Crédito insuficiente"},
+                                    status.HTTP_400_BAD_REQUEST)
+
+        except Exception as ex:
+            return Response({"message": "Algo deu errado, tente novamento mais tarde."},
+                                status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["GET"], detail=True)
+    def getbalance(self, request, pk=None):
+        user = User.objects.get(pk=pk)
+        balance = UserBalance.objects.get(user=user)
+
+        serializer = BalanceSerializer(balance)
+
+        return Response(serializer.data, status.HTTP_200_OK)
 

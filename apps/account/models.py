@@ -33,6 +33,27 @@ class Agente(models.Model):
         verbose_name_plural = 'agentes'
         ordering = ['-created']
 
+class UserBalance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
+    created_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return "Crédito de {0} na conta de {1}".format(self.amount, self.user.username)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_balance(sender, instance=None, created=False, **kwargs):
+    if created:
+        try:
+            balance = UserBalance.objects.get(user=instance)
+        except UserBalance.DoesNotExist:
+            balance = None
+
+        if not balance:
+            UserBalance.objects.create(user=instance)
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
