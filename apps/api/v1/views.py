@@ -285,17 +285,11 @@ class AgenteViewset(viewsets.ViewSet):
 
     @action(detail=True,)
     def perfis(self, request, pk=None):
-        try:
-            queryset = Perfil.objects_active.all().filter(owner__pk=int(pk))
-        except Exception as ex:
-            queryset = None
+        queryset = Perfil.objects_active.all().filter(owner__pk=int(pk))
 
-        if(queryset):
-            #print(queryset)
-            serializer = PerfilSerializer(queryset, many=True, context={'request': request})
-            return Response(serializer.data)
-        else:
-            return Response([])
+        #print(queryset)
+        serializer = PerfilSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data, status.HTTP_200_OK)
 
 
 
@@ -308,6 +302,8 @@ class PerfilViewset(viewsets.ViewSet):
         queryset = Perfil.objects_active.all()
         serializer = PerfilSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+
 
     def create(self, request,):
         data = json.loads(request.data['datus'])
@@ -328,19 +324,19 @@ class PerfilViewset(viewsets.ViewSet):
 
         try:
 
-            print(city)
-            print(state)
+            #print(city)
+            #print(state)
 
             if city and city.state.code==state.code:
                 Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
 
-                return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_201_CREATED)
+                return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_200_OK)
 
             elif city and city.state.code != state.code:
                 state = State.objects.create(code=data['stateCode'].lower(), name = data['stateName'])
                 city = City.objects.create(state=state, name=data['cityName'])
                 Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
-                return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_201_CREATED)
+                return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
 
             elif not city:
                 print("city nao existe")
@@ -351,7 +347,7 @@ class PerfilViewset(viewsets.ViewSet):
                                           sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
                                           peso=data['peso'], phone=data['phone'], description=data['description'],
                                           capa=request.FILES['file'])
-                    return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_201_CREATED)
+                    return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
 
                 else:
                     state = State.objects.create(code=data['stateCode'].lower(), name=data['stateName'])
@@ -361,13 +357,14 @@ class PerfilViewset(viewsets.ViewSet):
                                           peso=data['peso'], phone=data['phone'], description=data['description'],
                                           capa=request.FILES['file'])
 
-                    return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_201_CREATED)
+                    return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
 
 
         except Exception as ex:
-                return Response({"success": False, "message":"Algo deu errado, tente novamente."}, status.HTTP_400_BAD_REQUEST)
-                
+                return Response({"message":"Algo deu errado, tente novamente."}, status.HTTP_400_BAD_REQUEST)
+
         #return Response({"success": True, "message": "Perfil criado com successo"}, status=status.HTTP_201_OK)
+
 
 
     def retrieve(self, request, pk=None):
