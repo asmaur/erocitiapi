@@ -847,8 +847,8 @@ class MemberViewset(viewsets.ViewSet):
     @action(methods=["GET"], detail=True)
     def planos(self, request, pk=None):
         subs = Subscription.subs_active.all().filter(perfil__pk=pk)
-        planos = [plano.membership for plano in subs]
-        serializer = MemberShipSerializer(planos, many=True)
+        #planos = [plano.membership for plano in subs]
+        serializer = MiniSubscriptionSerializer(subs, many=True)
         return Response(serializer.data)
 
     @action(methods=["POST"], detail=True)
