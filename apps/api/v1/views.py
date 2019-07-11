@@ -206,6 +206,33 @@ class LoginViewset(viewsets.ModelViewSet):
             return Response({"message": "Não foi possível salvar seu email. Tente novamente mais tarde."},
                             status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=["POST"])
+    def notifications(self, request):
+        pagseguro_api = PagSeguroApi()
+        # tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
+
+        try:
+            transactionCode = request.data["transactionCode"]
+            data = pagseguro_api.get_transaction(transactionCode)
+            print(data)
+            email = data["transaction"]["sender"]["email"]
+            valor = data["transaction"]["grossAmount"]
+
+            if data["transaction"]["status"] == "3":
+                user = User.objects.get(email="kassaw@gmail.com")  # email)
+                # agente = Agente.objects.get(user=user)
+                ubalance = UserBalance.objects.get(user=user)
+                ubalance.amount += Decimal(valor)
+                # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
+                ubalance.save()
+
+                return Response({"message": "OK"}, status.HTTP_200_OK)
+
+        except Exception as ex:
+            print(ex)
+            return Response({"message": "NO"}, status.HTTP_200_OK)
+
+        return Response({"message": "NO"}, status.HTTP_200_OK)
 
 
 class UserViewset(viewsets.ViewSet):
@@ -885,33 +912,6 @@ class PaymentViewset(viewsets.ViewSet):
 
         return Response({"message": "Algo deu errado"})
 
-    @action(detail=False, methods=["POST"])
-    def notifications(self, request):
-        pagseguro_api = PagSeguroApi()
-        # tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
-
-        try:
-            transactionCode = request.data["transactionCode"]
-            data = pagseguro_api.get_transaction(transactionCode)
-            print(data)
-            email = data["transaction"]["sender"]["email"]
-            valor = data["transaction"]["grossAmount"]
-
-            if data["transaction"]["status"] == "3":
-                user = User.objects.get(email="kassaw@gmail.com")  # email)
-                # agente = Agente.objects.get(user=user)
-                ubalance = UserBalance.objects.get(user=user)
-                ubalance.amount += Decimal(valor)
-                # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
-                ubalance.save()
-
-                return Response({"message": "OK"}, status.HTTP_200_OK)
-
-        except Exception as ex:
-            print(ex)
-            return Response({"message": "NO"}, status.HTTP_200_OK)
-
-        return Response({"message": "NO"}, status.HTTP_200_OK)
 
     @action(methods=["POST"], detail=False)
     def setplanos(self, request):
