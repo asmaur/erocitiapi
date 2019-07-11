@@ -71,7 +71,7 @@ class LoginViewset(viewsets.ModelViewSet):
 
                 Agente.objects.create(user=user, state=state, cpf=cpf, city=city, code_area=code_area, phone=phone)
 
-                return Response({"message": "Usúario criado com successo, Faça seu login na sua conta"}, status.HTTP_201_CREATED)
+                return Response({"message": "Usúario criado com sucesso, Faça seu login na sua conta"}, status.HTTP_201_CREATED)
 
 
         except:
@@ -87,7 +87,7 @@ class LoginViewset(viewsets.ModelViewSet):
                 token, created = Token.objects.get_or_create(user=user)
                 ag = Agente.objects.get(user=user)
                 ags = UserAgenteSerializer(user)
-                return Response({"token": token.key, "agente": ags.data, "message": "Login realizado com successo.",
+                return Response({"token": token.key, "agente": ags.data, "message": "Login realizado com sucesso.",
                                          "log": True}, status=status.HTTP_200_OK)
             else:
                 message = "O úsuario foi desativado."
@@ -100,7 +100,7 @@ class LoginViewset(viewsets.ModelViewSet):
         authentication_classes = (TokenAuthentication,)
         print(request.user)
         logout(request)
-        return Response({"message": "logout realizado com successo."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "logout realizado com sucesso."}, status=status.HTTP_204_NO_CONTENT)
     
     @action(detail=False, methods=['POST'])
     def password_code(self, request, ):
@@ -151,11 +151,11 @@ class LoginViewset(viewsets.ModelViewSet):
 
         if(change_pass is not None):
             if(change_pass.active):
-                return Response({"success": True}, status.HTTP_200_OK)
+                return Response({"sucess": True}, status.HTTP_200_OK)
             else:
-                return Response({"success": False}, status.HTTP_200_OK)
+                return Response({"sucess": False}, status.HTTP_200_OK)
         else:
-            return Response({"success": False}, status.HTTP_400_BAD_REQUEST)
+            return Response({"sucess": False}, status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['POST'])
     def change_password(self, request, ):
@@ -200,7 +200,7 @@ class LoginViewset(viewsets.ModelViewSet):
             news = NewsLettersAds(email=email)
             news.save()
             return Response({
-                                "message": "Seu email foi salvo com successo. Será notificado no lançamento da plataforma. Obrigado pela confiança.!"},
+                                "message": "Seu email foi salvo com sucesso. Será notificado no lançamento da plataforma. Obrigado pela confiança.!"},
                             status.HTTP_200_OK)
         except Exception as ex:
             return Response({"message": "Não foi possível salvar seu email. Tente novamente mais tarde."},
@@ -230,17 +230,17 @@ class UserViewset(viewsets.ViewSet):
         serializer = UserSerializer(user, request.data)
         if(serializer.is_valid(raise_exception=True)):
             serializer.save()
-            return Response({"success": True, "message": "Usuário atualizado com successo..!"}, status.HTTP_200_OK)
+            return Response({"message": "Usuário atualizado com sucesso..!"}, status.HTTP_200_OK)
 
-        return Response({"success": False, "message": "Erro ao atualizar usuário, Tente novamente..!"}, serializer.errors,
+        return Response({"message": "Erro ao atualizar usuário, Tente novamente..!"}, serializer.errors,
                         status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
         user = get_object_or_404(User, pk=int(pk))
         if user:
             user.delete()
-            return Response({"success": True, "message": "Usuário removido com sucesso"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao remover usuário. Tente novamente"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Usuário removido com sucesso"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao remover usuário. Tente novamente"}, status=status.HTTP_400_BAD_REQUEST)
 
     
 
@@ -320,23 +320,20 @@ class PerfilViewset(viewsets.ViewSet):
         except State.DoesNotExist:
             state = None
 
-
-
         try:
-
             #print(city)
             #print(state)
 
             if city and city.state.code==state.code:
                 Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
 
-                return Response({"success": True, "message": "Perfil criado com successo"}, status.HTTP_200_OK)
+                return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
             elif city and city.state.code != state.code:
                 state = State.objects.create(code=data['stateCode'].lower(), name = data['stateName'])
                 city = City.objects.create(state=state, name=data['cityName'])
                 Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
-                return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
+                return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
             elif not city:
                 print("city nao existe")
@@ -344,26 +341,27 @@ class PerfilViewset(viewsets.ViewSet):
                 if state:
                     city = City.objects.create(name=data['cityName'], state=state)
                     Perfil.objects.create(owner=owner, city=city, nome=data['nome'], category=data['category'],
-                                          sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
-                                          peso=data['peso'], phone=data['phone'], description=data['description'],
-                                          capa=request.FILES['file'])
-                    return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
+                                              sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
+                                              peso=data['peso'], phone=data['phone'], description=data['description'],
+                                              capa=request.FILES['file'])
+                    return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
                 else:
                     state = State.objects.create(code=data['stateCode'].lower(), name=data['stateName'])
                     city = City.objects.create(state=state, name=data['cityName'])
                     Perfil.objects.create(owner=owner, city=city, nome=data['nome'], category=data['category'],
-                                          sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
-                                          peso=data['peso'], phone=data['phone'], description=data['description'],
-                                          capa=request.FILES['file'])
+                                              sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
+                                              peso=data['peso'], phone=data['phone'], description=data['description'],
+                                              capa=request.FILES['file'])
 
-                    return Response({"message": "Perfil criado com successo"}, status.HTTP_200_OK)
+                    return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
 
         except Exception as ex:
-                return Response({"message":"Algo deu errado, tente novamente."}, status.HTTP_400_BAD_REQUEST)
+            #print(ex)
+            return Response({"message":"Algo deu errado, tente novamente."}, status.HTTP_400_BAD_REQUEST)
 
-        #return Response({"success": True, "message": "Perfil criado com successo"}, status=status.HTTP_201_OK)
+
 
 
 
@@ -398,10 +396,10 @@ class PerfilViewset(viewsets.ViewSet):
 
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
-            return Response({"success": True, "message": "Perfil atualizado com sucesso..!"},
+            return Response({"message": "Perfil atualizado com sucesso..!"},
                                     status=status.HTTP_200_OK)
 
-        return Response({"success": False, "message": "Erro ao atualizar perfil"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Erro ao atualizar perfil"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -409,8 +407,8 @@ class PerfilViewset(viewsets.ViewSet):
         per = get_object_or_404(Perfil, pk=int(pk))
         if per:
             per.delete()
-            return Response({"success": True, "message": "Perfil removido com sucesso"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao remover perfil"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Perfil removido com sucesso"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao remover perfil"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -449,8 +447,8 @@ class ImageViewset(viewsets.ViewSet):
         if request.FILES:
             for img in request.FILES:
                 Image.objects.create(image_erociti=request.FILES[img], perfil = per)
-            return Response({"success": True, "message": "imagen adicionada com successo..!"}, status.HTTP_201_CREATED)
-        return Response({"success": False, "message": "Erro ao adicionar imagem"}, status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "imagen adicionada com sucesso..!"}, status.HTTP_201_CREATED)
+        return Response({"message": "Erro ao adicionar imagem"}, status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
         query = Image.objects.all().filter(perfil__pk=int(pk))
@@ -462,7 +460,7 @@ class ImageViewset(viewsets.ViewSet):
         img = get_object_or_404(Image, pk=int(pk))
         img.delete()
 
-        return Response({"success": True, "message": "A imagem foi removida"}, status=status.HTTP_200_OK)
+        return Response({"message": "A imagem foi removida"}, status=status.HTTP_200_OK)
 
 
 
@@ -490,8 +488,8 @@ class DadosViewset(viewsets.ViewSet):
         serializer = DadosPerfilSerializer(dado, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success":True, "message": "Os dados foram atualizados atualizados com successo..!"}, status=status.HTTP_200_OK)
-        return Response({"success":False, "message": "Algo deu errado ao atualizar os dados. Tente novamente"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Os dados foram atualizados atualizados com sucesso..!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, pk):
         return Response(" partial update ..!")
@@ -524,8 +522,8 @@ class ServiceViewset(viewsets.ViewSet):
         serializer = ServiceSerializer(service, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success": True, "message": "Os serviços foram atualizados com successo..!"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao atualizar os serviços..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Os serviços foram atualizados com sucesso..!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao atualizar os serviços..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, pk):
         pass
@@ -555,8 +553,8 @@ class ServiceEspecialViewset(viewsets.ViewSet):
         serializer = ServiceEspecialSerializer(service, request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success": True, "message": "Os serviços foram atualizados successo..!"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao atualizar os serviços..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Os serviços foram atualizados sucesso..!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao atualizar os serviços..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def partial_update(self, request, pk):
@@ -590,8 +588,8 @@ class LocaisViewset(viewsets.ViewSet):
         serializer = LocalSerializer(local, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success": True,  "message": "Os locais foram atualizados com successo..!"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao atualizar os locais..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Os locais foram atualizados com sucesso..!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao atualizar os locais..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, pk):
         pass
@@ -624,8 +622,8 @@ class ValoresViewset(viewsets.ViewSet):
         serializer = ValorSerializer(valor, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"success": True,  "message": "Os valores foram atualizados com sucesso..!"}, status=status.HTTP_200_OK)
-        return Response({"success": False, "message": "Erro ao atualizar os valores..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Os valores foram atualizados com sucesso..!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Erro ao atualizar os valores..!"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def partial_update(self, request, pk):

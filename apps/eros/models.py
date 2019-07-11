@@ -160,7 +160,7 @@ class DadosPerfil(models.Model):
     men = models.BooleanField(default=True)
     women = models.BooleanField(default=False)
     couple = models.BooleanField(default=False)
-    dote = models.IntegerField(blank=True, )
+    dote = models.IntegerField(blank=True, null=True)
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='dados')
     tipo = models.CharField(max_length=20, blank=True,)
 
@@ -436,6 +436,8 @@ def perfil_post_save(sender, **kwargs):
     loc = Local.objects.update_or_create(perfil=perfil)
 
     print("Post Save Done")
+
+
 
 
 @receiver(pre_save, sender=City)
