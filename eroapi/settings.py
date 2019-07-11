@@ -163,11 +163,11 @@ DEFAULT_FONT = os.path.join(BASE_DIR, 'static/fonts/OpenSans-Italic.ttf')
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-
-
 CORS_ORIGIN_WHITELIST = config('CORS_ORIGIN_WHITELIST', cast=Csv())
 
-#CORS_URLS_REGEX = r'^/api/.*$'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
