@@ -11,7 +11,8 @@ import json, uuid
 import datetime as dt
 from decimal import Decimal
 from django.conf import settings
-
+import requests, pprint
+import xmltodict
 from django.template import Context
 from django.template.loader import render_to_string, get_template
 from django.core.mail import EmailMessage, EmailMultiAlternatives
@@ -206,22 +207,38 @@ class LoginViewset(viewsets.ModelViewSet):
             return Response({"message": "Não foi possível salvar seu email. Tente novamente mais tarde."},
                             status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def get_transactions(notificationCode):
+        #print(notificationCode)
+        url = "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications/" + notificationCode
+        response = requests.get(
+            url,
+            params={'email': settings.PAGSEGURO_EMAIL, 'token': settings.PAGSEGURO_TOKEN},
+            headers={'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'},
+        )
+
+        datas = xmltodict.parse(response.content)
+        data = json.dumps(datas)
+
+        return data
+
     @action(detail=False, methods=["POST"])
     def notifications(self, request):
-        pagseguro_api = PagSeguroApi()
-        # tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
-
         try:
+            code = request.data["notificationCode"]
+            #print(code)
 
-            transactionCode = request.data["transactionCode"]
-            data = pagseguro_api.get_transaction(transactionCode)
-            #print(data)
+            data = json.loads(self.get_transactions(code))
+
             email = data["transaction"]["sender"]["email"]
             valor = data["transaction"]["grossAmount"]
+            statusCode = data["transaction"]["status"]
+            #print(email)
+            #print(Decimal(valor))
 
-            if data["transaction"]["status"] == "3":
-                user = User.objects.get(email)
-                # agente = Agente.objects.get(user=user)
+            if statusCode == "3":
+                #print("Aqui....")
+                user = User.objects.get(email=email)
                 ubalance = UserBalance.objects.get(user=user)
                 ubalance.amount += Decimal(valor)
                 # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
