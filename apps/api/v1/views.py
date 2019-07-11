@@ -212,14 +212,15 @@ class LoginViewset(viewsets.ModelViewSet):
         # tipo = ['Diamond', 'Destaque', 'Top', 'Basic']
 
         try:
+
             transactionCode = request.data["transactionCode"]
             data = pagseguro_api.get_transaction(transactionCode)
-            print(data)
+            #print(data)
             email = data["transaction"]["sender"]["email"]
             valor = data["transaction"]["grossAmount"]
 
             if data["transaction"]["status"] == "3":
-                user = User.objects.get(email="kassaw@gmail.com")  # email)
+                user = User.objects.get(email)
                 # agente = Agente.objects.get(user=user)
                 ubalance = UserBalance.objects.get(user=user)
                 ubalance.amount += Decimal(valor)
@@ -229,7 +230,7 @@ class LoginViewset(viewsets.ModelViewSet):
                 return Response({"message": "OK"}, status.HTTP_200_OK)
 
         except Exception as ex:
-            print(ex)
+            #print(ex)
             return Response({"message": "NO"}, status.HTTP_200_OK)
 
         return Response({"message": "NO"}, status.HTTP_200_OK)
