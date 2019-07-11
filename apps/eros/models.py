@@ -236,13 +236,13 @@ class Local(models.Model):
 class Valor(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='valores')
     caches_1h = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_2h = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_3h = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_4h = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_pernoite_dia_util = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_sexta_noite = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_fim_semana_dia = models.DecimalField(max_digits=8, decimal_places=2, default=50)
-    caches_sabado_noite = models.DecimalField(max_digits=8, decimal_places=2, default=50)
+    caches_2h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_3h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_4h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_pernoite_dia_util = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_sexta_noite = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_fim_semana_dia = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_sabado_noite = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
 
 
     class Meta:
