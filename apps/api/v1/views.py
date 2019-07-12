@@ -948,9 +948,11 @@ class PaymentViewset(viewsets.ViewSet):
                 data = request.data
                 perfil = Perfil.objects.get(pk=data["perId"])
                 plano = Membership.objects.get(pk=data["planoId"])
-                # print(plano.price)
+                #print(plano.price)
+                #print(balance.amount)
+                #print(balance.amount>plano.price)
 
-                if (balance.amount > plano.price):
+                if (balance.amount >= plano.price):
                     created_date = timezone.now()
                     end_date = timezone.now() + timedelta(days=int(plano.valide_time))
                     Subscription.objects.create(types=tipo.index(plano.membership_type), code=uuid.uuid4(),
@@ -963,7 +965,7 @@ class PaymentViewset(viewsets.ViewSet):
                     return Response({"message": "O plano foi adicionado ao perfil com sucesso. Atualize a página."},
                                         status.HTTP_200_OK)
                 else:
-                    return Response({"message": "Crédito insuficiente"}, status.HTTP_400_BAD_REQUEST)
+                    return Response({"message": "Saldo insuficiente"}, status.HTTP_400_BAD_REQUEST)
 
             except Exception as ex:
                 # print(ex)

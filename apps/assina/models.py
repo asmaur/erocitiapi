@@ -55,7 +55,7 @@ class Membership(models.Model):
         choices=MEMBERSHIP_CHOICES,
         default='Basic',
         max_length=30)
-    price = models.DecimalField(max_digits=5, decimal_places=2, default= 50,)
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=59.90,)
     valide_time = models.CharField(choices=MEMBERSHIP_TIME,
         default='15',
         max_length=30)
