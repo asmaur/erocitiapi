@@ -986,7 +986,7 @@ class PaymentViewset(viewsets.ViewSet):
             subs = Subscription.objects.get(code=data["code"])
             balance = UserBalance.objects.get(user=subs.user)
 
-            if (balance.amount > plano.price):
+            if (balance.amount >= plano.price):
 
                 created = timezone.now()
 
