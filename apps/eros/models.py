@@ -122,7 +122,7 @@ class Perfil(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, blank=True)
     description = models.TextField(blank=True)
-    capa = ProcessedImageField(upload_to=path_perfil, processors=[ResizeToFit(1900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 90}, blank=True)
+    capa = ProcessedImageField(upload_to=path_perfil, processors=[ResizeToFit(1600, 900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 75}, blank=True)
     is_vip = models.BooleanField(default=False)
     suspended = models.BooleanField(default=False)
     is_working = models.BooleanField(default=True)
@@ -235,7 +235,8 @@ class Local(models.Model):
 
 class Valor(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='valores')
-    caches_1h = models.DecimalField(max_digits=8, decimal_places=2, default=50)
+    caches_30min = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    caches_1h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     caches_2h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     caches_3h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     caches_4h = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
@@ -299,7 +300,7 @@ class Image(models.Model):
 
     code = models.CharField(max_length=250, blank=True, unique=True, )
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='images')
-    image_erociti = ProcessedImageField(upload_to=image_path_album_erociti, processors=[ResizeToFit(1280), Watermark(text="EroCiti")], format='JPEG', options={'quality': 90}, blank=True)
+    image_erociti = ProcessedImageField(upload_to=image_path_album_erociti, processors=[ResizeToFit(1600, 900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 75}, blank=True)
     is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField('date added', auto_now=True)
 
