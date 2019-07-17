@@ -300,7 +300,7 @@ class Image(models.Model):
 
     code = models.CharField(max_length=250, blank=True, unique=True, )
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='images')
-    image_erociti = ProcessedImageField(upload_to=image_path_album_erociti, processors=[ResizeToFit(1600, 900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 75}, blank=True)
+    image_erociti = ProcessedImageField(upload_to=image_path_album_erociti, processors=[Watermark(text="EroCiti")], format='JPEG', options={'quality': 75}, blank=True)
     is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField('date added', auto_now=True)
 
