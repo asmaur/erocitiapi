@@ -23,7 +23,7 @@ class Subscriptions(viewsets.ViewSet):
 
     def list(self, request):
         queryset = Subscription.subs_active.all()  # .order_by('-created_date')
-        serializer = SubscriptionSerializer(queryset, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(queryset, many=True,)
         return Response(serializer.data)
 
 
@@ -33,7 +33,7 @@ class Subscriptions(viewsets.ViewSet):
         """"Conjunto de 12 modelo na pagina principal global excluindo as subs basicas"""
 
         queryset = Subscription.subs_active.filter(perfil__category="mulheres").filter(perfil__is_working=True).filter(perfil__suspended=False).order_by("types")
-        serializer = SubscriptionSerializer(queryset, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(queryset, many=True, )
         #print(queryset)
         return Response(serializer.data)
 
@@ -42,7 +42,7 @@ class Subscriptions(viewsets.ViewSet):
     def diamonds(self, request, code=None, slug=None, categ=None):
         #print('subs diamond')
         diam = Subscription.subs_active.filter(types="0").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
-        serializer = SubscriptionSerializer(diam, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
 
@@ -52,7 +52,7 @@ class Subscriptions(viewsets.ViewSet):
         #print('subs destaque')
         diam = Subscription.subs_active.filter(types="1").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
             perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
-        serializer = SubscriptionSerializer(diam, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
 
@@ -62,7 +62,7 @@ class Subscriptions(viewsets.ViewSet):
         #print('subs tops')
         diam = Subscription.subs_active.filter(types="2").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
             perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
-        serializer = SubscriptionSerializer(diam, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
 
@@ -71,7 +71,7 @@ class Subscriptions(viewsets.ViewSet):
         #print('subs basic')
         diam = Subscription.subs_active.filter(types="3").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
             perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
-        serializer = SubscriptionSerializer(diam, many=True, context={'request': request})
+        serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
 
@@ -85,12 +85,12 @@ class PerfilViewset(viewsets.ViewSet):
 
     def list(self, request):
         #queryset = Subscription.subs_active.all().order_by('-created_date')
-        serializer = PerfilSerializer(self.queryset, many=True, context={'request': request})
+        serializer = PerfilSerializer(self.queryset, many=True,)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         perfil = get_object_or_404(self.queryset, code=pk)
-        serializer = PerfilDetailSerializer(perfil, context={'request': request})
+        serializer = PerfilDetailSerializer(perfil, )
         return Response(serializer.data)
 
 
@@ -117,7 +117,7 @@ class StateViewset(viewsets.ViewSet):
         """Get specific city."""
         city = City.objects.all().filter(state__code=code).filter(slug=slug)
         print(city)
-        serializer = CitySerializer(city, many=True,  context={'request': request})
+        serializer = CitySerializer(city, many=True,  )
         return Response(serializer.data)
 
 class SearchAll(viewsets.ViewSet):
