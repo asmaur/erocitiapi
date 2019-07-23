@@ -168,9 +168,9 @@ SITE_ID = 1
 WATERMARK_IMAGE = os.path.join(BASE_DIR, 'static/img/Coat_of_arms_of_Ireland.png')
 DEFAULT_FONT = os.path.join(BASE_DIR, 'static/fonts/OpenSans-Italic.ttf')
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = config('CORS_ORIGIN_ALLOW_ALL', cast=bool) #False pra ir ao servidor
 
-CORS_ORIGIN_WHITELIST = config('CORS_ORIGIN_WHITELIST', cast=Csv())
+CORS_ORIGIN_WHITELIST =config('CORS_ORIGIN_WHITELIST', cast=Csv())
 
 #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 #SESSION_COOKIE_SECURE = True

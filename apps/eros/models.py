@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit
+from django.dispatch import receiver
 
 
 

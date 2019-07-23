@@ -881,10 +881,11 @@ class PaymentViewset(viewsets.ViewSet):
     def checkout(self, request):
         # print(request.data)
         pagseguro_api = PagSeguroApi(currency=request.data["currency"], reference=request.data["reference"],
-                                         senderEmail=request.data["senderEmail"], senderName=request.data["senderName"],
+                                         senderEmail=request.data["senderEmail"],#"amama@sandbox.pagseguro.com.br",#request.data["senderEmail"],
+                                         senderName=request.data["senderName"],
                                          senderAreaCode=request.data["senderAreaCode"],
                                          senderPhone=request.data["senderPhone"],
-                                         shipping_cost=0)  # request.data["senderPhone"])
+                                         shipping_cost=0, )  # request.data["senderPhone"])
         item1 = PagSeguroItem(id=request.data["itemId"], description=request.data["itemDescription"],
                                   amount=request.data["itemAmount"], quantity=request.data["itemQuantity"], )
 
