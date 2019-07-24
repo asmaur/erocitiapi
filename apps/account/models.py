@@ -17,7 +17,7 @@ class Agente(models.Model):
     code_area = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     created = models.DateField(auto_now_add=True)
-    cpf = models.CharField(max_length=50, blank=True, null=True)
+    #cpf = models.CharField(max_length=50, blank=True, null=True)
     aceito = models.BooleanField(default=True)
 
     def __str__(self):

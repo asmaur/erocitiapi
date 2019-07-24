@@ -48,7 +48,7 @@ class LoginViewset(viewsets.ModelViewSet):
             # dados para criar agente
 
             phone = request.data["phone"]
-            cpf = request.data["cpf"]
+            #cpf = request.data["cpf"]
             city = request.data["city"]
             code_area = request.data["code_area"]
             state = request.data["state"]
@@ -70,7 +70,7 @@ class LoginViewset(viewsets.ModelViewSet):
                 user.last_name = last_name
                 user.save()
 
-                Agente.objects.create(user=user, state=state, cpf=cpf, city=city, code_area=code_area, phone=phone)
+                Agente.objects.create(user=user, state=state, city=city, code_area=code_area, phone=phone)
 
                 return Response({"message": "Usúario criado com sucesso, Faça seu login na sua conta"}, status.HTTP_201_CREATED)
 
