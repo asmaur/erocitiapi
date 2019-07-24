@@ -201,7 +201,7 @@ class LoginViewset(viewsets.ModelViewSet):
             news = NewsLettersAds(email=email)
             news.save()
             return Response({
-                                "message": "Seu email foi salvo com sucesso. Será notificado no lançamento da plataforma. Obrigado pela confiança.!"},
+                                "message": "Seu email foi salvo com sucesso. Logo Receberá novidades da plataforma. Obrigado!"},
                             status.HTTP_200_OK)
         except Exception as ex:
             return Response({"message": "Não foi possível salvar seu email. Tente novamente mais tarde."},
