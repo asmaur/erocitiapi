@@ -235,7 +235,7 @@ class KlicsCountSerializer(serializers.ModelSerializer):
 class MemberShipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
-        fields = ('id','membership_type', 'price', 'valide_time', 'active' ,"description")
+        fields = ('id','membership_type', 'price', 'valide_time', 'active' ,"description", 'unpaid', 'beneficios')
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -253,7 +253,7 @@ class MiniSubscriptionSerializer(serializers.ModelSerializer):
     membership = MemberShipSerializer(read_only=True)
     class Meta:
         model = Subscription
-        fields = ('pk', 'code', 'membership', 'end_date', 'active')
+        fields = ('pk', 'code', 'membership', 'end_date', 'active', )
 
 class BalanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)

@@ -61,6 +61,7 @@ class Membership(models.Model):
         max_length=30)
     beneficios = models.TextField(blank=True,)
     active = models.BooleanField(default=False,)
+    unpaid = models.BooleanField(default=False)
     description = models.CharField(max_length=100, blank=True,)
 
     def __str__(self):

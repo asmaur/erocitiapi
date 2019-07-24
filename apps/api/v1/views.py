@@ -663,7 +663,7 @@ class ValoresViewset(viewsets.ViewSet):
     def update(self, request, pk=None):
         valor = get_object_or_404(Valor, pk=int(pk))
         data = request.data
-        print(data)
+        #print(data)
         serializer = ValorSerializer(valor, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -691,7 +691,7 @@ class ViewsViewset(viewsets.ViewSet):
     def list(self, request):
         query = PerfilViewCount.objects.all()
         serializer = ViewsCountSerializer(query, many=True)
-        print("list")
+        #print("list")
 
         return Response(serializer.data)
 
@@ -796,8 +796,8 @@ class KlicsViewset(viewsets.ViewSet):
         
         try:
             klics = PerfilNumberClick.objects.filter(perfil=per).filter(created__day = today.day)
-            print(today.day)
-            print(klics)
+            #print(today.day)
+            #print(klics)
         except PerfilNumberClick.DoesNotExist:
             klics = None
         
@@ -954,17 +954,32 @@ class PaymentViewset(viewsets.ViewSet):
                 #print(balance.amount>plano.price)
 
                 if (balance.amount >= plano.price):
-                    created_date = timezone.now()
-                    end_date = timezone.now() + timedelta(days=int(plano.valide_time))
-                    Subscription.objects.create(types=tipo.index(plano.membership_type), code=uuid.uuid4(),
-                                                    user=user, membership=plano, perfil=perfil,
-                                                    created_date=created_date,
-                                                    end_date=end_date, count=1)
-                    new_amount = balance.amount - plano.price
-                    balance.amount = new_amount
-                    balance.save()
-                    return Response({"message": "O plano foi adicionado ao perfil com sucesso. Atualize a página."},
+
+                    try:
+                        subs = Subscription.subs_active.all().filter(perfil=perfil).filter(membership=plano).count()
+                        print(subs)
+                    except Exception as ex:
+                        print(ex)
+                        subs = 0
+
+                    if (subs == 0):
+                        created_date = timezone.now()
+                        end_date = timezone.now() + timedelta(days=int(plano.valide_time))
+                        Subscription.objects.create(types=tipo.index(plano.membership_type), code=uuid.uuid4(),
+                                                        user=user, membership=plano, perfil=perfil,
+                                                        created_date=created_date,
+                                                        end_date=end_date, count=1)
+                        new_amount = balance.amount - plano.price
+                        balance.amount = new_amount
+                        balance.save()
+                        return Response({"message": "O plano foi adicionado ao perfil com sucesso. Atualize a página."},
+                                            status.HTTP_200_OK)
+                    else:
+                        return Response({"message": "Você já possui esse plano ativo para este perfil."},
                                         status.HTTP_200_OK)
+
+
+
                 else:
                     return Response({"message": "Saldo insuficiente"}, status.HTTP_400_BAD_REQUEST)
 
