@@ -22,6 +22,20 @@ TYPE_SUBS = (
     (3,'Basic')
 )
 
+LEVELS = (
+    (0, 'level_0'),
+    (1, 'level_1'),
+    (2, 'level_2'),
+    (3, 'level_3'),
+    (4, 'level_4'),
+    (5, 'level_5'),
+    (6, 'level_6'),
+    (7, 'level_7'),
+    (8, 'level_8'),
+    (9, 'level_9'),
+    (10, 'level_10'),
+
+)
 
 MEMBERSHIP_CHOICES = (
     ('Basic', 'basic'),
@@ -51,21 +65,24 @@ TRANSACTION_STATUS_CHOICES = (
 
 
 class Membership(models.Model):
-    membership_type = models.CharField(
-        choices=MEMBERSHIP_CHOICES,
-        default='Basic',
-        max_length=30)
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=59.90,)
-    valide_time = models.CharField(choices=MEMBERSHIP_TIME,
-        default='15',
-        max_length=30)
-    beneficios = models.TextField(blank=True,)
+    #membership_type = models.CharField( choices=MEMBERSHIP_CHOICES, default='Basic', max_length=30)
+    membership_type = models.CharField(help("Nome do Plano"), max_length=50, default='Basic', blank=True)
+    price = models.DecimalField(help("valor do Plano"), max_digits=5, decimal_places=2, default=59.90,)
+    valide_time = models.PositiveIntegerField( help("Tempo de validate do Plano"), max_length=2)
+    #valide_time = models.CharField(choices=MEMBERSHIP_TIME, default='15', max_length=30)
+    #beneficios = models.TextField(blank=True,)
+    level = models.IntegerField(help("Escala do Plano [0 a 10]"), LEVELS, default=0)
     active = models.BooleanField(default=False,)
     unpaid = models.BooleanField(default=False)
     description = models.CharField(max_length=100, blank=True,)
 
+    class Meta:
+        ordering = ['-level']
+        verbose_name = "Plano"
+        verbose_name_plural = 'Planos'
+
     def __str__(self):
-        return self.membership_type
+        return self.level
 
 class SubscriptionManager(models.Manager):
     def get_queryset(self):
