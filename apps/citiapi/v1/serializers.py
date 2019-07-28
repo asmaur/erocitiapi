@@ -96,16 +96,16 @@ class PerfilSerializer(serializers.ModelSerializer):
 class MemberShipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
-        fields = ('id','membership_type',)
+        fields = ('id','name',)
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
 
     perfil = PerfilSerializer(read_only=True)
-    membership = MemberShipSerializer(read_only=True)
+    #membership = MemberShipSerializer(read_only=True)
     class Meta:
         model = Subscription
-        fields = ('code', 'membership', 'perfil', 'active')
+        fields = ('code', 'types', 'perfil')
 
 class ViewsCountSerializer(serializers.ModelSerializer):
     class Meta:

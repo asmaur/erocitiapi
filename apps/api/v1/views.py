@@ -516,25 +516,30 @@ class DadosViewset(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def list(self, request, format=json):
+    def list(self, request,):
         serializer = DadosPerfilSerializer(self.queryset, many=True)
         return  Response(serializer.data)
 
-    def retrieve(self, request, pk=None, format=json):
+    def retrieve(self, request, pk=None, ):
         dado = get_object_or_404(DadosPerfil, pk=int(pk))
         serializer = DadosPerfilSerializer(dado)
 
         return Response(serializer.data)
 
-    def update(self, request, pk=None, format=json):
+    def update(self, request, pk=None, ):
         dado = get_object_or_404(DadosPerfil, pk=int(pk))
-        data = request.data
+        data = json.loads(request.data['datus'])
         #print(data)
-        serializer = DadosPerfilSerializer(dado, data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({"message": "Os dados foram atualizados atualizados com sucesso..!"}, status=status.HTTP_200_OK)
-        return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = DadosPerfilSerializer(dado, data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({"message": "Os dados foram atualizados atualizados com sucesso..!"}, status=status.HTTP_200_OK)
+            return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, serializer.errors, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            print(ex)
+            return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, status.HTTP_400_BAD_REQUEST)
+
 
     def partial_update(self, request, pk):
         return Response(" partial update ..!")
@@ -853,7 +858,7 @@ class MemberViewset(viewsets.ViewSet):
 
     @action(methods=["POST"], detail=True)
     def vip(self, request, pk=None):
-        count = Subscription.objects.filter(perfil__pk=pk).filter(types=0).count()
+        count = Subscription.objects.filter(perfil__pk=pk).filter(membership__level=4).count()
 
         if (count >= 12):
             perfil = Perfil.objects.get(pk=pk)
@@ -934,7 +939,7 @@ class PaymentViewset(viewsets.ViewSet):
 
     @action(methods=["POST"], detail=False)
     def setplanos(self, request):
-        tipo = ["Diamond", "Destaque", "Top", "Basic"]
+
         try:
             user = User.objects.get(pk=request.data["userId"])
             balance = UserBalance.objects.get(user=user)
@@ -965,7 +970,7 @@ class PaymentViewset(viewsets.ViewSet):
                     if (subs == 0):
                         created_date = timezone.now()
                         end_date = timezone.now() + timedelta(days=int(plano.valide_time))
-                        Subscription.objects.create(types=tipo.index(plano.membership_type), code=uuid.uuid4(),
+                        Subscription.objects.create(types=plano.level, code=uuid.uuid4(),
                                                         user=user, membership=plano, perfil=perfil,
                                                         created_date=created_date,
                                                         end_date=end_date, count=1)

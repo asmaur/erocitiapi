@@ -66,15 +66,15 @@ TRANSACTION_STATUS_CHOICES = (
 
 class Membership(models.Model):
     #membership_type = models.CharField( choices=MEMBERSHIP_CHOICES, default='Basic', max_length=30)
-    membership_type = models.CharField(help("Nome do Plano"), max_length=50, default='Basic', blank=True)
-    price = models.DecimalField(help("valor do Plano"), max_digits=5, decimal_places=2, default=59.90,)
-    valide_time = models.PositiveIntegerField( help("Tempo de validate do Plano"), max_length=2)
+    name = models.CharField(help_text="Nome do Plano", max_length=50, default='Basic', blank=True)
+    price = models.DecimalField(help_text=("valor do Plano"), max_digits=5, decimal_places=2, default=59.90,)
+    valide_time = models.PositiveIntegerField( help_text=("Tempo de validate do Plano"), )
     #valide_time = models.CharField(choices=MEMBERSHIP_TIME, default='15', max_length=30)
-    #beneficios = models.TextField(blank=True,)
-    level = models.IntegerField(help("Escala do Plano [0 a 10]"), LEVELS, default=0)
+    beneficios = models.TextField(blank=True,)
+    level = models.IntegerField(choices=LEVELS, default=0, help_text="Escala do Plano [0 a 10]")
     active = models.BooleanField(default=False,)
     unpaid = models.BooleanField(default=False)
-    description = models.CharField(max_length=100, blank=True,)
+    #description = models.CharField(max_length=100, blank=True,)
 
     class Meta:
         ordering = ['-level']
@@ -82,7 +82,7 @@ class Membership(models.Model):
         verbose_name_plural = 'Planos'
 
     def __str__(self):
-        return self.level
+        return "Plano *{0}* nivel {1}".format(self.name, self.level)
 
 class SubscriptionManager(models.Manager):
     def get_queryset(self):
@@ -103,7 +103,7 @@ class SubscriptionDestManager(models.Manager):
 
 
 class Subscription(models.Model):
-    types = models.IntegerField(TYPE_SUBS, default=3)
+    types = models.IntegerField(default=0)
     code = models.CharField(max_length=100, unique=True, help_text="codigo de validação")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     membership = models.ForeignKey(Membership, on_delete=models.SET_NULL, null=True)
@@ -119,14 +119,17 @@ class Subscription(models.Model):
         else:
             return False
 
+    class Meta:
+        ordering = ['-types']
+
     def __str__(self):
-        return "Plano *{0}* para {1} {2}".format(self.membership.membership_type, self.perfil.nome, self.perfil.sobrenome)
+        return "Plano *{0}* para {1} {2}".format(self.membership.name, self.perfil.nome, self.perfil.sobrenome)
 
     objects = models.Manager()
     subs_active = SubscriptionManager()
-    subs_top = SubscriptionTopManager()
-    subs_destak = SubscriptionDestManager()
-    subs_diamond = SubscriptionDaimondManager()
+    #subs_top = SubscriptionTopManager()
+    #subs_destak = SubscriptionDestManager()
+    #subs_diamond = SubscriptionDaimondManager()
 
 
 

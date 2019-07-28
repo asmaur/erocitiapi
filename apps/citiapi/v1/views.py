@@ -32,7 +32,7 @@ class Subscriptions(viewsets.ViewSet):
     def general(self, request):
         """"Conjunto de 12 modelo na pagina principal global excluindo as subs basicas"""
 
-        queryset = Subscription.subs_active.filter(perfil__category="mulheres").filter(perfil__is_working=True).filter(perfil__suspended=False).order_by("types")[:12]
+        queryset = Subscription.subs_active.filter(perfil__category="mulheres").filter(perfil__is_working=True).filter(perfil__suspended=False).order_by("-types")[:12]
         serializer = SubscriptionSerializer(queryset, many=True, )
         #print(queryset)
         return Response(serializer.data)
@@ -41,7 +41,7 @@ class Subscriptions(viewsets.ViewSet):
     @action(detail=False, url_name ='diamonds', url_path='(?P<code>[-\w]+)/(?P<slug>[-\w]+)/(?P<categ>[-\w]+)/diamonds')
     def diamonds(self, request, code=None, slug=None, categ=None):
         #print('subs diamond')
-        diam = Subscription.subs_active.filter(types="0").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
+        diam = Subscription.subs_active.filter(types=3).filter(perfil__is_working=True).filter(perfil__suspended=False).filter(perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code).order_by("-end_date")
         serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
@@ -50,8 +50,8 @@ class Subscriptions(viewsets.ViewSet):
     @action(detail=False, url_name='destaks', url_path='(?P<code>[-\w]+)/(?P<slug>[-\w]+)/(?P<categ>[-\w]+)/destaks')
     def destaks(self, request, code=None, slug=None, categ=None):
         #print('subs destaque')
-        diam = Subscription.subs_active.filter(types="1").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
-            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
+        diam = Subscription.subs_active.filter(types=2).filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
+            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code).order_by("-end_date")
         serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
@@ -60,8 +60,8 @@ class Subscriptions(viewsets.ViewSet):
     @action(detail=False, url_name='tops', url_path='(?P<code>[-\w]+)/(?P<slug>[-\w]+)/(?P<categ>[-\w]+)/tops')
     def tops(self, request, code=None, slug=None, categ=None):
         #print('subs tops')
-        diam = Subscription.subs_active.filter(types="2").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
-            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
+        diam = Subscription.subs_active.filter(types=1).filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
+            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code).order_by("-end_date")
         serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 
@@ -69,8 +69,8 @@ class Subscriptions(viewsets.ViewSet):
     @action(detail=False, url_name='tops', url_path='(?P<code>[-\w]+)/(?P<slug>[-\w]+)/(?P<categ>[-\w]+)/basic')
     def basic(self, request, code=None, slug=None, categ=None):
         #print('subs basic')
-        diam = Subscription.subs_active.filter(types="3").filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
-            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code)
+        diam = Subscription.subs_active.filter(types=0).filter(perfil__is_working=True).filter(perfil__suspended=False).filter(
+            perfil__category=categ).filter(perfil__city__slug=slug).filter(perfil__city__state__code=code).order_by("-end_date")
         serializer = SubscriptionSerializer(diam, many=True, )
         return Response(serializer.data)
 

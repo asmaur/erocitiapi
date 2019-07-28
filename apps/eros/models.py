@@ -153,8 +153,8 @@ class Perfil(models.Model):
 
 
 class DadosPerfil(models.Model):
-    twitter = models.URLField(blank=True)
-    instagram = models.URLField(blank=True)
+    twitter = models.CharField( max_length=50, blank=True)
+    instagram = models.CharField( max_length=50, blank=True)
     cabelo = models.CharField(max_length=50, blank=True)
     etnia = models.CharField(max_length=50, blank=True)
     seios = models.CharField(max_length=50, blank=True)
