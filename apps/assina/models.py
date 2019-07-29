@@ -73,7 +73,7 @@ class Membership(models.Model):
     beneficios = models.TextField(blank=True,)
     level = models.IntegerField(choices=LEVELS, default=0, help_text="Escala do Plano [0 a 10]")
     active = models.BooleanField(default=False,)
-    unpaid = models.BooleanField(default=False)
+    renew = models.BooleanField(help_text="Renovável ?", default=False)
     #description = models.CharField(max_length=100, blank=True,)
 
     class Meta:
