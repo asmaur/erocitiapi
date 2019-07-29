@@ -235,7 +235,7 @@ class KlicsCountSerializer(serializers.ModelSerializer):
 class MemberShipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Membership
-        fields = ('id','name', 'price', 'valide_time', 'active' ,'renew', 'beneficios')
+        fields = ('id','name', 'price', 'valide_time', 'active' ,'unpaid', 'beneficios')
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
