@@ -15,6 +15,9 @@ admin.site.register(Album)
 admin.site.register(Image)
 admin.site.register(Video)
 
+admin.site.register(NewsLettersAds)
+admin.site.register(NewsUsers)
+
 admin.site.register(PerfilViewCount)
 admin.site.register(PerfilNumberClick)
 

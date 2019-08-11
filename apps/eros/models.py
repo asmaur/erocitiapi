@@ -261,8 +261,8 @@ class NewsUsers(models.Model):
     created_at = models.DateField(auto_now=True)
 
     class Meta:
-        verbose_name = "NewsUser"
-        verbose_name_plural = "NewsUsers"
+        verbose_name = "NewsUserCiti"
+        verbose_name_plural = "NewsUsersCiti"
 
         def __str__(self):
             return self.email
@@ -408,6 +408,10 @@ class ChangePasseCode(models.Model):
 class NewsLettersAds(models.Model):
     email = models.EmailField()
     created_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "NewsUserAds"
+        verbose_name_plural = "NewsUsersAds"
 
     def __str__(self):
         return self.email
