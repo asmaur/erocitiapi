@@ -264,8 +264,8 @@ class NewsUsers(models.Model):
         verbose_name = "NewsUserCiti"
         verbose_name_plural = "NewsUsersCiti"
 
-        def __str__(self):
-            return self.email
+    def __str__(self):
+        return self.email
 
 class Denunciar(models.Model):
     perfil_id = models.CharField(max_length=100)
