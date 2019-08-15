@@ -14,6 +14,7 @@ admin.site.register(City)
 admin.site.register(Album)
 admin.site.register(Image)
 admin.site.register(Video)
+admin.site.register(Denunciar)
 
 admin.site.register(NewsLettersAds)
 admin.site.register(NewsUsers)
