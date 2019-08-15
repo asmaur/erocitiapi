@@ -5,7 +5,7 @@ from django.db.models.signals import pre_save, post_save
 from django.conf import settings
 from django.utils.text import slugify
 from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFit
+from imagekit.processors import ResizeToFit, ResizeToFill, ResizeToCover, SmartResize
 from django.dispatch import receiver
 
 
@@ -123,7 +123,8 @@ class Perfil(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, blank=True)
     description = models.TextField(blank=True)
-    capa = ProcessedImageField(upload_to=path_perfil, processors=[ResizeToFit(1600, 900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 75}, blank=True)
+    capa_original = models.ImageField(upload_to=path_perfil, blank=True)
+    capa = ProcessedImageField(upload_to=path_perfil, processors=[ResizeToFill(width=1600, height=900), Watermark(text="EroCiti")], format='JPEG', options={'quality': 60}, blank=True)
     is_vip = models.BooleanField(default=False)
     suspended = models.BooleanField(default=False)
     is_working = models.BooleanField(default=True)
@@ -146,6 +147,7 @@ class Perfil(models.Model):
     def delete(self, *args, **kwargs):
         #self.capa.delete()
         os.remove(os.path.join(settings.MEDIA_ROOT, self.capa.name))
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.capa_original.name))
         super(Perfil, self).delete(*args, **kwargs)
 
 

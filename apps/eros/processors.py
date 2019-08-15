@@ -122,7 +122,7 @@ class Watermark():
 
     def process(self, image):
         #text = "DEI X"
-        font = ImageFont.truetype(settings.DEFAULT_FONT, 400)
+        font = ImageFont.truetype(settings.DEFAULT_FONT, 350)
         rgba_image = image.convert('RGBA')
         text_overlay = Image.new('RGBA', rgba_image.size, (255, 255, 255, 0))
         image_draw = ImageDraw.Draw(text_overlay)

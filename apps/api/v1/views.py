@@ -370,14 +370,14 @@ class PerfilViewset(viewsets.ViewSet):
             #print(state)
 
             if city and city.state.code==state.code:
-                Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
+                Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa_original=request.FILES['file'], capa = request.FILES['file'])
 
                 return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
             elif city and city.state.code != state.code:
                 state = State.objects.create(code=data['stateCode'].lower(), name = data['stateName'])
                 city = City.objects.create(state=state, name=data['cityName'])
-                Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa = request.FILES['file'])
+                Perfil.objects.create( owner=owner, city=city, nome = data['nome'], category = data['category'], sobrenome = data['sobrenome'], idade = data['idade'], altura = data['altura'], peso = data['peso'], phone = data['phone'], description = data['description'], capa_original=request.FILES['file'], capa = request.FILES['file'])
                 return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
             elif not city:
@@ -387,7 +387,7 @@ class PerfilViewset(viewsets.ViewSet):
                     city = City.objects.create(name=data['cityName'], state=state)
                     Perfil.objects.create(owner=owner, city=city, nome=data['nome'], category=data['category'],
                                               sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
-                                              peso=data['peso'], phone=data['phone'], description=data['description'],
+                                              peso=data['peso'], phone=data['phone'], description=data['description'], capa_original=request.FILES['file'],
                                               capa=request.FILES['file'])
                     return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
@@ -397,7 +397,7 @@ class PerfilViewset(viewsets.ViewSet):
                     Perfil.objects.create(owner=owner, city=city, nome=data['nome'], category=data['category'],
                                               sobrenome=data['sobrenome'], idade=data['idade'], altura=data['altura'],
                                               peso=data['peso'], phone=data['phone'], description=data['description'],
-                                              capa=request.FILES['file'])
+                                              capa_original=request.FILES['file'], capa=request.FILES['file'])
 
                     return Response({"message": "Perfil criado com sucesso"}, status.HTTP_201_CREATED)
 
@@ -432,6 +432,7 @@ class PerfilViewset(viewsets.ViewSet):
             if 'capa' in request.data:
                 capa = request.FILES['capa']
                 per.capa = capa
+                per.capa_original = capa
                 per.save()
 
 
