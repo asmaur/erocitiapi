@@ -429,8 +429,7 @@ def perfil_pre_save(sender, **kwargs):
     if not perfil.slug:
         perfil.slug = slugify("{0}-{1}".format(perfil.nome, perfil.sobrenome))
 
-    #capa = add_text_overlay(perfil.capa, "DEI X")
-    #perfil.capa = capa
+
 
     print(perfil.slug, perfil.code)
 
@@ -443,7 +442,7 @@ def perfil_post_save(sender, **kwargs):
     val = Valor.objects.update_or_create(perfil=perfil)
     loc = Local.objects.update_or_create(perfil=perfil)
 
-    print("Post Save Done")
+    #print("Post Save Done")
 
 
 

@@ -538,7 +538,7 @@ class DadosViewset(viewsets.ViewSet):
                 return Response({"message": "Os dados foram atualizados atualizados com sucesso..!"}, status=status.HTTP_200_OK)
             return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, serializer.errors, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
-            print(ex)
+            #print(ex)
             return Response({"message": "Algo deu errado ao atualizar os dados. Tente novamente"}, status.HTTP_400_BAD_REQUEST)
 
 
@@ -569,7 +569,7 @@ class ServiceViewset(viewsets.ViewSet):
     def update(self, request, pk=None):
         service = get_object_or_404(Service, pk=int(pk))
         data = request.data
-        print(data)
+        #print(data)
         serializer = ServiceSerializer(service, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -635,7 +635,7 @@ class LocaisViewset(viewsets.ViewSet):
     def update(self, request, pk=None):
         local = get_object_or_404(Local, pk=int(pk))
         data = request.data
-        print(data)
+        #print(data)
         serializer = LocalSerializer(local, data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -901,7 +901,7 @@ class PaymentViewset(viewsets.ViewSet):
 
     @action(detail=False, methods=["POST"])
     def transactions(self, request, ):
-        print(request.data)
+        #print(request.data)
         perId = request.data["perId"]
         userId = request.data["userId"]
         planoId = request.data["planoId"]
@@ -963,9 +963,9 @@ class PaymentViewset(viewsets.ViewSet):
 
                     try:
                         subs = Subscription.subs_active.all().filter(perfil=perfil).filter(membership=plano).count()
-                        print(subs)
+                        #print(subs)
                     except Exception as ex:
-                        print(ex)
+                        #print(ex)
                         subs = 0
 
                     if (subs == 0):
