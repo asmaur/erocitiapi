@@ -120,7 +120,7 @@ class Subscription(models.Model):
             return False
 
     class Meta:
-        ordering = ['-end_date','-types']
+        ordering = ['-types', '-end_date',]
 
     def __str__(self):
         return "Plano *{0}* para {1} {2}".format(self.membership.name, self.perfil.nome, self.perfil.sobrenome)
