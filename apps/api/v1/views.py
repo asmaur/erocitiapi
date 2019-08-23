@@ -124,7 +124,7 @@ class LoginViewset(viewsets.ModelViewSet):
 
                 ctx = {'code': code,}
 
-                html = get_template('api/mail/email.html')
+                html = get_template('mail/email.html')
                 message = html.render(ctx)
                 msg = EmailMultiAlternatives(subject, message, to=to_user, from_email=from_email)
                 msg.attach_alternative(message, "text/html")
@@ -333,7 +333,7 @@ class AgenteViewset(viewsets.ViewSet):
         queryset = Perfil.objects.all().filter(owner__pk=int(pk))
 
         #print(queryset)
-        serializer = PerfilSerializer(queryset, many=True,)
+        serializer = PerfilSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status.HTTP_200_OK)
 
 
@@ -345,7 +345,7 @@ class PerfilViewset(viewsets.ViewSet):
 
     def list(self, request):
         queryset = Perfil.objects.all()
-        serializer = PerfilSerializer(queryset, many=True, )
+        serializer = PerfilSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
 
@@ -412,13 +412,13 @@ class PerfilViewset(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         query = get_object_or_404(Perfil, pk=int(pk))
-        serializer = PerfilDetailSerializer(query,)
+        serializer = PerfilDetailSerializer(query, context={"request": request})
         return Response(serializer.data)
 
     @action(methods=['get'], detail=True)
     def mini(self, request, pk=None):
         query = get_object_or_404(Perfil, pk=int(pk))
-        serializer = PerfilSerializer(query, )
+        serializer = PerfilSerializer(query, context={"request": request})
         return Response(serializer.data)
 
 
@@ -467,14 +467,14 @@ class ImageViewset(viewsets.ViewSet):
 
     def list(self, request):
         images = Image.objects.all()
-        serializer = ImageSerializer(images, many=True, )
+        serializer = ImageSerializer(images, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'])
     def image(self, request, pk=None):
         per = get_object_or_404(Perfil, pk=int(pk))
         images = Image.objects.all().filter(perfil=per)
-        serializer = ImageSerializer(images, many=True, )
+        serializer = ImageSerializer(images, many=True, context={"request": request})
         return Response(serializer.data, status.HTTP_200_OK)
 
     @action(detail=True, methods=['GET'])
@@ -498,7 +498,7 @@ class ImageViewset(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         query = Image.objects.all().filter(perfil__pk=int(pk))
-        serializer = ImageSerializer(query, many=True, )
+        serializer = ImageSerializer(query, many=True, context={"request": request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
