@@ -32,7 +32,7 @@ class Subscriptions(viewsets.ViewSet):
     def general(self, request):
         """"Conjunto de 12 modelo na pagina principal global excluindo as subs basicas"""
 
-        queryset = Subscription.subs_active.filter(perfil__category="mulheres").filter(perfil__is_working=True).filter(perfil__suspended=False).order_by("-end_date").order_by("-types")[:20]
+        queryset = Subscription.subs_active.filter(perfil__category="mulheres").filter(perfil__is_working=True).filter(perfil__suspended=False).order_by("-end_date", "-types")[:20]
         serializer = SubscriptionSerializer(queryset, many=True, context={"request": request})
         #print(queryset)
         return Response(serializer.data)
