@@ -29,6 +29,12 @@ class Agente(models.Model):
     def get_full_location(self):
         return "Adresse.: {0} {1} {2}".format(self.country, self.state, self.city)
 
+    def owner_name(self):
+        return "{0} {1}".format(self.user.last_name, self.user.first_name)
+
+    def owner_numero(self):
+        return "{0}{1}".format(self.code_area, self.phone)
+
     class Meta:
         verbose_name = 'agente'
         verbose_name_plural = 'agentes'

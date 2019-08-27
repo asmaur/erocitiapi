@@ -8,4 +8,4 @@ admin.site.register(Membership)
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'active']
+    list_display = ['__str__', 'end_date', 'active']

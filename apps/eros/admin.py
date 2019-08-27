@@ -2,8 +2,18 @@ from django.contrib import admin
 from .models import *
 # Register your models here.
 
+class PerfilAdmin(admin.ModelAdmin):
+    #sets up values for how admin site lists categories
+    list_display = ('fullname', 'code', 'owner_name', 'owner_numero','created_at',)
+    list_display_links = ('fullname', 'code', 'owner_name', 'owner_numero')
+    list_per_page = 20
+    ordering = ['created_at']
+    search_fields = ['code',] # 'owner.user.username', ]
+    exclude = ('created_at', 'updated_at', "code")
 
-admin.site.register(Perfil)
+
+
+admin.site.register(Perfil, PerfilAdmin)
 admin.site.register(DadosPerfil)
 admin.site.register(Service)
 admin.site.register(Service_especial)

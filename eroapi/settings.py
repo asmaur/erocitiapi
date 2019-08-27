@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from decouple import config, Csv
-
+from celery.schedules import crontab
+from kombu import Queue
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -45,7 +46,7 @@ INSTALLED_APPS = [
 LOCAL_APPS = ['apps.eros', 'apps.account', 'apps.api', 'apps.assina', 'apps.citiapi']
 
 
-THIRD_PARTY_APPS = ['rest_framework', 'rest_framework.authtoken', 'imagekit', 'corsheaders', 'pagseguro']
+THIRD_PARTY_APPS = ['rest_framework', 'rest_framework.authtoken', 'imagekit', 'corsheaders', 'pagseguro',]
 
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -72,10 +73,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'eroapi.urls'
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -185,8 +188,7 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
-#EMAIL_SUBJECT_PREFIX = '[Parsifal] '
-#SERVER_EMAIL = 'application@parsif.al'
+
 
 PAGSEGURO_EMAIL = config('PAGSEGURO_EMAIL')
 PAGSEGURO_SANDBOX = config('PAGSEGURO_SANDBOX', cast=bool)
@@ -198,3 +200,106 @@ if CITIPROD:
     PAGSEGURO_TOKEN = config('PAGSEGURO_TOKEN_PROD')
 else:
     PAGSEGURO_TOKEN = config('PAGSEGURO_TOKEN')
+
+
+
+CONTACT_FROM_EMAIL=config('CONTACT_FROM_EMAIL')
+SUPPORT_FROM_EMAIL=config('SUPPORT_FROM_EMAIL')
+NOREPLY_FROM_EMAIL=config('NOREPLY_FROM_EMAIL')
+REPORT_FROM_EMAIL=config('REPORT_FROM_EMAIL')
+
+#MAILCHIMP
+MAILCHIMP_API_KEY=config('MAILCHIMP_API_KEY')
+MAILCHIMP_DATA_CENTER=config('MAILCHIMP_DATA_CENTER')
+MAILCHIMP_LIST_ID=config('MAILCHIMP_LIST_ID')
+
+
+
+#celery config
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+CELERYD_CONCURRENCY = 2
+CELERYD_MAX_TASKS_PER_CHILD = 4
+CELERYD_PREFETCH_MULTIPLIER = 1
+CELERY_BROKER_URL = 'amqp://localhost'
+
+# celery queues setup
+"""
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+    Queue('feeds', Exchange('feeds'), routing_key='long_tasks'),
+)
+"""
+
+CELERY_CREATE_MISSING_QUEUES=True
+
+CELERY_ROUTES = {
+    'apps.api.v1.tasks.esqueci_senha_task': {
+        'queue': 'esqueci-senha',
+        'routing_key': 'esqueci_senha',
+    },
+    'apps.api.v1.tasks.vencimento_de_plano_task': {
+        'queue': 'noty-vencimento',
+        'routing_key': 'noty_vencimento',
+    },
+    'apps.api.v1.tasks.add_ads_mailchimp_task': {
+        'queue': 'ads-mailchimp',
+        'routing_key': 'ads_mailchimp',
+    },
+    'apps.citiapi.v1.tasks.add_citi_mailchimp_task': {
+        'queue': 'citi-mailchimp',
+        'routing_key': 'citi_mailchimp',
+    },
+    'apps.citiapi.v1.tasks.sem_subscrition_task': {
+        'queue': 'sem-subscrition',
+        'routing_key': 'sem_subscrition',
+    },
+    'apps.citiapi.v1.tasks.sem_perfil_task': {
+        'queue': 'sem-perfil',
+        'routing_key': 'sem_perfil',
+    },
+}
+
+
+if CITIPROD:
+
+    CELERY_BEAT_SCHEDULE = {
+        'vencimento-task': {
+            'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
+            'schedule': crontab(minute=0, hour='11'),
+
+        },
+        'sem-perfil-task': {
+            'task': 'apps.api.v1.tasks.sem_perfil_task',
+            'schedule': crontab(minute=0, hour=11, day_of_week="3"),
+
+        },
+        'sem-subscription-task': {
+            'task': 'apps.api.v1.tasks.sem_subscrition_task',
+            'schedule': crontab(minute=0, hour=11, day_of_week="3"),
+
+        },
+    }
+else:
+    CELERY_BEAT_SCHEDULE = {
+
+        'vencimento-task': {
+            'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
+            'schedule': crontab(minute="*/1"),
+
+        },
+        'sem-perfil-task': {
+            'task': 'apps.api.v1.tasks.sem_perfil_task',
+            'schedule': crontab(minute="*/1"),
+
+        },
+        'sem-subscription-task': {
+            'task': 'apps.api.v1.tasks.sem_subscrition_task',
+            'schedule': crontab(minute="*/1"),
+
+        },
+    }

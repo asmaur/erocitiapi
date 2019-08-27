@@ -12,7 +12,7 @@ import datetime as dt
 from .serializers import *
 from ...eros.models import *
 from ...assina.models import *
-
+from .tasks import *
 
 
 
@@ -149,9 +149,11 @@ class NewsLetters(viewsets.ViewSet):
 
     @action(detail=False, methods=["POST"], url_name='newsusers')
     def newsusers(self, request):
-        mail = request.data["email"]
 
-        NewsUsers.objects.create(email=mail)
+        email = request.data["email"]
+
+        #NewsUsers.objects.create(email=mail)
+        add_citi_mailchimp_task.delay(email)
 
         return Response({"message": "O seu email foi adicionado com successo ..!"})
 
@@ -166,6 +168,7 @@ class Denuncia(viewsets.ViewSet):
         perid = request.data["perid"]
         link = request.data["link"]
         Denunciar.objects.create(perfil_id=perid, link=link)
+        denuncia_task.delay(id=perid, link=link, feito_no=timezone.now())
 
         return Response({"message": "A sua denuncia foi recebida, iremos analiza-lo cuidasomente."})
 

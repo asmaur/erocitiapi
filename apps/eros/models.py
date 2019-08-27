@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFit, ResizeToFill, ResizeToCover, SmartResize
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 
@@ -144,6 +145,12 @@ class Perfil(models.Model):
     def fullname(self):
         return "{0} {1}".format(self.nome, self.sobrenome)
 
+    def owner_name(self):
+        return "{0} {1}".format(self.owner.user.last_name, self.owner.user.first_name)
+
+    def owner_numero(self):
+        return "{0}{1}".format(self.owner.code_area, self.owner.phone)
+
     def delete(self, *args, **kwargs):
         #self.capa.delete()
         os.remove(os.path.join(settings.MEDIA_ROOT, self.capa.name))
@@ -273,6 +280,7 @@ class Denunciar(models.Model):
     perfil_id = models.CharField(max_length=100)
     link = models.URLField()
     created_at = models.DateTimeField(auto_now=True)
+    resolvido = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Denuncia"
@@ -398,7 +406,7 @@ class ChangePasseCode(models.Model):
     end_at = models.DateTimeField(blank=True)
 
     def active(self):
-        if self.end_date > self.created_at:
+        if self.end_at > timezone.now():
             return True
         else:
             return False

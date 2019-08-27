@@ -11,11 +11,9 @@ import json, uuid
 import datetime as dt
 from decimal import Decimal
 from django.conf import settings
-import requests, pprint
+import requests
 import xmltodict
-from django.template import Context
-from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage, EmailMultiAlternatives
+from .tasks import *
 
 
 #pagseguro
@@ -69,7 +67,7 @@ class LoginViewset(viewsets.ModelViewSet):
                 user.first_name = first_name
                 user.last_name = last_name
                 user.save()
-
+                add_ads_mailchimp_task.delay(email)
                 Agente.objects.create(user=user, state=state, city=city, code_area=code_area, phone=phone)
 
                 return Response({"message": "Usúario criado com sucesso, Faça seu login na sua conta"}, status.HTTP_201_CREATED)
@@ -116,19 +114,9 @@ class LoginViewset(viewsets.ModelViewSet):
             try:
                 code = uuid.uuid4()
                 email = request.data['email']
+                #print(email, user.last_name, code)
                 end_at = timezone.now() + timedelta(days=1)
-
-                subject = "Recuperação de senha"
-                to_user = [email, ]
-                from_email = settings.DEFAULT_FROM_EMAIL
-
-                ctx = {'code': code,}
-
-                html = get_template('mail/email.html')
-                message = html.render(ctx)
-                msg = EmailMultiAlternatives(subject, message, to=to_user, from_email=from_email)
-                msg.attach_alternative(message, "text/html")
-                msg.send()
+                esqueci_senha_task.delay(email=email, code=code, last_name=user.last_name)
                 ChangePasseCode.objects.create(code=code, email=email, end_at=end_at)
 
                 return Response({"message": "Um link para recuperação da sua senha foi enviado ao seu email.!"},
@@ -152,11 +140,11 @@ class LoginViewset(viewsets.ModelViewSet):
 
         if(change_pass is not None):
             if(change_pass.active):
-                return Response({"sucess": True}, status.HTTP_200_OK)
+                return Response({"success": True}, status.HTTP_200_OK)
             else:
-                return Response({"sucess": False}, status.HTTP_200_OK)
+                return Response({"success": False}, status.HTTP_200_OK)
         else:
-            return Response({"sucess": False}, status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False}, status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['POST'])
     def change_password(self, request, ):
@@ -198,8 +186,9 @@ class LoginViewset(viewsets.ModelViewSet):
     def adsnewsletter(self, request):
         try:
             email = request.data["email"]
-            news = NewsLettersAds(email=email)
-            news.save()
+            #news = NewsLettersAds(email=email)
+            #news.save()
+            add_ads_mailchimp_task.delay(email)
             return Response({
                                 "message": "Seu email foi salvo com sucesso. Logo Receberá novidades da plataforma. Obrigado!"},
                             status.HTTP_200_OK)
