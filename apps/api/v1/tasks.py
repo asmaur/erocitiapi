@@ -12,12 +12,14 @@ from ...utils.mailer import *
 
 @task(bind=True,)
 def esqueci_senha_task(self, **kwargs):
+
     try:
         data = kwargs
         mail = Mailer(to=kwargs.get('email'), data=data)
         mail.noty_senhas()
+        return "Senha Enviado"
     except Exception as ex:
-        #print(ex)
+        print(ex)
         # dt = datetime.datetime.now(pytz.utc) + datetime.timedelta(seconds=1)
         self.retry(exc=ex, max_retries=5, countdown=5)
 

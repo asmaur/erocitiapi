@@ -10,17 +10,21 @@ class Mailer():
         self.data = data
 
     def noty_senhas(self):
-        #to = kwargs.get('email')
-        plainhtml = get_template('senhas/email.html')
-        plaintext = get_template('senhas/email.txt')
-        from_email = settings.SUPPORT_FROM_EMAIL  # NOREPLY_FROM_EMAIL
-        #data = {'code': kwargs.get('code'), 'last_name': kwargs.get('last_name')}
-        text_content = plaintext.render(self.data)
-        html_content = plainhtml.render(self.data)  # render_to_string('senhas/email.txt', data) #
-        msg = EmailMultiAlternatives("Recuperação de senha", text_content, from_email=from_email, to=[self.to, ])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-        return None
+        try:
+            #to = kwargs.get('email')
+            plainhtml = get_template('senhas/email.html')
+            plaintext = get_template('senhas/email.txt')
+            from_email = settings.SUPPORT_FROM_EMAIL  # NOREPLY_FROM_EMAIL
+            #data = {'code': kwargs.get('code'), 'last_name': kwargs.get('last_name')}
+            text_content = plaintext.render(self.data)
+            html_content = plainhtml.render(self.data)  # render_to_string('senhas/email.txt', data) #
+            msg = EmailMultiAlternatives("Recuperação de senha", text_content, from_email=from_email, to=[self.to, ])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return None
+        except Exception as ex:
+            print(ex)
+            return None
 
     def noty_planos(self):
         plainhtml = get_template('planos/planos.html')

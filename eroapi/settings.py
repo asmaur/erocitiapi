@@ -270,17 +270,17 @@ if CITIPROD:
     CELERY_BEAT_SCHEDULE = {
         'vencimento-task': {
             'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
-            'schedule': crontab(minute=0, hour='11'),
+            'schedule': crontab(minute=0, hour='12'),
 
         },
         'sem-perfil-task': {
             'task': 'apps.api.v1.tasks.sem_perfil_task',
-            'schedule': crontab(minute=0, hour=11, day_of_week="3"),
+            'schedule': crontab(minute=0, hour=17,) #day_of_week="3"),
 
         },
         'sem-subscription-task': {
             'task': 'apps.api.v1.tasks.sem_subscrition_task',
-            'schedule': crontab(minute=0, hour=11, day_of_week="3"),
+            'schedule': crontab(minute=0, hour=18,) #day_of_week="3"),
 
         },
     }
@@ -289,17 +289,17 @@ else:
 
         'vencimento-task': {
             'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
-            'schedule': crontab(minute="*/1"),
+            'schedule': crontab(minute=0, hour='15'),
 
         },
         'sem-perfil-task': {
             'task': 'apps.api.v1.tasks.sem_perfil_task',
-            'schedule': crontab(minute="*/1"),
+            'schedule': crontab(minute=0, hour=18, day_of_week="3"),
 
         },
         'sem-subscription-task': {
             'task': 'apps.api.v1.tasks.sem_subscrition_task',
-            'schedule': crontab(minute="*/1"),
+            'schedule': crontab(minute=0, hour=18, day_of_week="3"),
 
         },
     }
