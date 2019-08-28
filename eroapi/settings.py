@@ -275,12 +275,12 @@ if CITIPROD:
         },
         'sem-perfil-task': {
             'task': 'apps.api.v1.tasks.sem_perfil_task',
-            'schedule': crontab(minute=0, hour=17,) #day_of_week="3"),
+            'schedule': crontab(minute=0, hour=17,day_of_week=1),
 
         },
         'sem-subscription-task': {
             'task': 'apps.api.v1.tasks.sem_subscrition_task',
-            'schedule': crontab(minute=0, hour=18,) #day_of_week="3"),
+            'schedule': crontab(minute=0, hour=18,day_of_week=1),
 
         },
     }
