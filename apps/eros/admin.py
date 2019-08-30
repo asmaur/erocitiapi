@@ -27,7 +27,8 @@ class DenunciaAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ("get_fullname", "get_absolute_link", "created_at")
 
-
+class NotificationsAdmin(admin.ModelAdmin):
+    list_display = ("notyCode", "transCode", "get_status", "creditado", "email", "created_at")
 
 
 
@@ -51,7 +52,7 @@ admin.site.register(NewsUsers)
 admin.site.register(PerfilViewCount, ViewAdmin)
 admin.site.register(PerfilNumberClick, ClicAdmin)
 
-admin.site.register(Transactions)
+admin.site.register(Notifications, NotificationsAdmin)
 
 @admin.register(ChangePasseCode)
 class ChangePasseCodeAdmin(admin.ModelAdmin):

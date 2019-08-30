@@ -199,31 +199,34 @@ class LoginViewset(viewsets.ModelViewSet):
     @staticmethod
     def get_transactions(notificationCode):
         #print(notificationCode)
-        url = "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications/" + notificationCode
+        url = f'{settings.PAGSEGURO_TRANSACTIONS_URL}{notificationCode}'
         response = requests.get(
             url,
             params={'email': settings.PAGSEGURO_EMAIL, 'token': settings.PAGSEGURO_TOKEN},
             headers={'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'},
         )
-
+        #print(response.content)
         datas = xmltodict.parse(response.content)
         data = json.dumps(datas)
+
+        #print(data)
 
         return data
 
     @action(detail=False, methods=["POST"])
     def notifications(self, request):
         try:
+            #print(request.data)
             code = request.data["notificationCode"]
-            #print(code)
+            print(code)
 
             data = json.loads(self.get_transactions(code))
 
             email = data["transaction"]["sender"]["email"]
             valor = data["transaction"]["grossAmount"]
             statusCode = data["transaction"]["status"]
-            #print(email)
-            #print(Decimal(valor))
+            transCode = data["transaction"]["code"]
+            #Notifications.objects.create(notyCode=code, transCode=transCode, status=statusCode)
 
             if statusCode == "3":
                 #print("Aqui....")
@@ -231,16 +234,18 @@ class LoginViewset(viewsets.ModelViewSet):
                 ubalance = UserBalance.objects.get(user=user)
                 ubalance.amount += Decimal(valor)
                 ubalance.created_date = timezone.now()
-                # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
                 ubalance.save()
-
+                Notifications.objects.create(notyCode=code, transCode=transCode, status=statusCode, creditado=True, email=email)
+                return Response({"message": "OK"}, status.HTTP_200_OK)
+            else:
+                Notifications.objects.create(notyCode=code, transCode=transCode, status=statusCode, email=email)
                 return Response({"message": "OK"}, status.HTTP_200_OK)
 
         except Exception as ex:
-            #print(ex)
+            print(ex)
             return Response({"message": "NO"}, status.HTTP_200_OK)
 
-        return Response({"message": "NO"}, status.HTTP_200_OK)
+        #return Response({"message": "NO"}, status.HTTP_200_OK)
 
 
 class UserViewset(viewsets.ViewSet):
@@ -887,6 +892,7 @@ class PaymentViewset(viewsets.ViewSet):
 
         pagseguro_api.add_item(item1)
         data = pagseguro_api.checkout()
+
         return Response(data)
 
     @action(detail=False, methods=["POST"])

@@ -415,15 +415,36 @@ class PerfilNumberClick(models.Model):
         return f'{self.clicked} hoje'
 
 
-class Transactions(models.Model):
-    perId = models.IntegerField()
-    userId = models.IntegerField()
-    planoId = models.IntegerField()
-    transactionCode = models.CharField(max_length=200)
-    status = models.CharField(max_length=20, null=True)
+class Notifications(models.Model):
+    notyCode = models.CharField(max_length=200)
+    transCode = models.CharField(max_length=200, blank=True)
+    status = models.CharField(max_length=20, blank=True)
+    creditado = models.BooleanField(default=False)
+    email = models.EmailField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
-        return self.transactionCode
+        return self.notyCode
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def get_status(self):
+        TRANSACTION_STATUS = {
+            '1': 'aguardando',
+            '2': 'em analise',
+            '3': 'pago',
+            '4': 'disponivel',
+            '5': 'em disputa',
+            '6': 'devolvido',
+            '7': 'cancelado',
+            '8': 'debitado',
+            '9': 'retencao temporaria',
+        }
+
+        return TRANSACTION_STATUS[self.status]
+
 
 
 class ChangePasseCode(models.Model):
