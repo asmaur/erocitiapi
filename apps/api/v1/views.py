@@ -242,8 +242,8 @@ class LoginViewset(viewsets.ModelViewSet):
                 return Response({"message": "OK"}, status.HTTP_200_OK)
 
         except Exception as ex:
-            print(ex)
-            return Response({"message": "NO"}, status.HTTP_200_OK)
+            #print(ex)
+            return Response({"message": "NO"}, status.HTTP_400_BAD_REQUEST)
 
         #return Response({"message": "NO"}, status.HTTP_200_OK)
 
