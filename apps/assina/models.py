@@ -150,6 +150,9 @@ class Subscription(models.Model):
     def get_name(self):
         return f'{self.perfil.nome} {self.perfil.sobrenome}'
 
+    def owner_fullname(self):
+        return f'{self.user.last_name} {self.user.first_name}'
+
     def get_citi(self):
         return f'{self.perfil.city.name}'
 

@@ -8,7 +8,7 @@ class PerfilAdmin(admin.ModelAdmin):
     list_display_links = ('fullname', 'code', 'owner_name', 'owner_numero')
     list_per_page = 20
     ordering = ['created_at']
-    search_fields = ['code',] # 'owner.user.username', ]
+    search_fields = ['code', 'nome', 'sobrenome']
     exclude = ('created_at', 'updated_at', "code")
 
 
