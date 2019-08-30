@@ -78,7 +78,7 @@ class LoginViewset(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def login(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+        #print(request.data)
 
         user = authenticate(username=request.data["username"], password=request.data["password"])
         if user is not None:
@@ -97,7 +97,7 @@ class LoginViewset(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def logout(self, request):
         authentication_classes = (TokenAuthentication,)
-        print(request.user)
+        #print(request.user)
         logout(request)
         return Response({"message": "logout realizado com sucesso."}, status=status.HTTP_204_NO_CONTENT)
     
@@ -162,19 +162,22 @@ class LoginViewset(viewsets.ModelViewSet):
             if (change_pass.active):
 
                 try:
-                    print(passconf, passw)
+                    #print(passconf, passw)
+                    #print(change_pass.email)
                     user = User.objects.get(email=change_pass.email)
+
 
                     if (passw == passconf):
 
                         user.set_password(passconf)
+                        user.save()
                         return Response({"message": "A sua senha foi atualizado, tente logar na sua conta."},
                                         status.HTTP_200_OK)
                     else:
                         return Response({"message": "As senhas não correspondem."}, status.HTTP_400_BAD_REQUEST)
 
                 except Exception as ex:
-                    print(ex)
+                    #print(ex)
                     return Response({"message": "Não há usúario com este email cadastrado."}, status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({"message": "Código de ativação inválido."}, status.HTTP_400_BAD_REQUEST)
