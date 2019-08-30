@@ -137,7 +137,7 @@ class Perfil(models.Model):
     class Meta:
         verbose_name = 'Perfil'
         verbose_name_plural = 'Perfis'
-        ordering = ['-created_at']
+        ordering = ['created_at']
 
     def __str__(self):
         return "{0} {1}".format(self.nome, self.sobrenome)

@@ -262,6 +262,10 @@ CELERY_ROUTES = {
         'queue': 'sem-perfil',
         'routing_key': 'sem_perfil',
     },
+    #'apps.api.v1.tasks.credito_acabando_task': {
+     #   'queue': 'credito-acabando',
+      #  'routing_key': 'credito_acabando',
+    #},
 }
 
 
