@@ -230,6 +230,7 @@ class LoginViewset(viewsets.ModelViewSet):
                 user = User.objects.get(email=email)
                 ubalance = UserBalance.objects.get(user=user)
                 ubalance.amount += Decimal(valor)
+                ubalance.created_date = timezone.now()
                 # ubalance.end_date = dt.datetime.today() + timedelta(days=int(30))
                 ubalance.save()
 

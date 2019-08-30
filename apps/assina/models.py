@@ -84,6 +84,28 @@ class Membership(models.Model):
     def __str__(self):
         return "Plano *{0}* nivel {1}".format(self.name, self.level)
 
+    def get_name(self):
+        return f'{self.name}'
+
+    def get_level(self):
+        return f'{self.level}'
+
+    def get_value(self):
+        return self.price
+
+    def get_status(self):
+        return self.active
+
+    def get_free(self):
+        return self.unpaid
+
+    def valide(self):
+        return f'{self.valide_time} dias'
+
+
+
+
+
 class SubscriptionManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(end_date__gte = timezone.now())
@@ -125,11 +147,18 @@ class Subscription(models.Model):
     def __str__(self):
         return "Plano *{0}* para {1} {2}".format(self.membership.name, self.perfil.nome, self.perfil.sobrenome)
 
+    def get_name(self):
+        return f'{self.perfil.nome} {self.perfil.sobrenome}'
+
+    def get_citi(self):
+        return f'{self.perfil.city.name}'
+
+    def get_plano(self):
+        return f'{self.membership.name}'
+
     objects = models.Manager()
     subs_active = SubscriptionManager()
-    #subs_top = SubscriptionTopManager()
-    #subs_destak = SubscriptionDestManager()
-    #subs_diamond = SubscriptionDaimondManager()
+
 
 
 

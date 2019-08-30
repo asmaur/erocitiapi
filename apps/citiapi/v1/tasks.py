@@ -47,7 +47,7 @@ def denuncia_task(self,**kwargs):
     try:
         anuncio = Perfil.objects.get(id=kwargs.get('id'))
         data = {"link":kwargs.get('link'), "last_name":anuncio.user.last_name, "first_name":anuncio.user.first_name,'code':anuncio.code,"nome":anuncio.nome, "sobrenome": anuncio.sobrenome, "feito_no": kwargs.get('feito_no')}
-        mail = Mailer(to=settings.REPORT_FROM_EMAIL, data=data)
+        mail = Mailer(to=settings.REPORT_FROM_EMAIL, data=data, temp_html='denuncia/denuncia.html', temp_txt='denuncia/denuncia.txt')
     except Exception as ex:
         #print(ex)
-        self.retry(exc=ex, max_retries=5, countdown=20)
+        self.retry(exc=ex, max_retries=5, countdown=71)

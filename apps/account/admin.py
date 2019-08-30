@@ -8,8 +8,10 @@ class AgenteAdmin(admin.ModelAdmin):
     list_display_links = ('get_full_name', 'owner_name', 'owner_numero')
     search_fields = ['phone', ]
 
+class BalanceAdmin(admin.ModelAdmin):
+    list_display = ('get_value', 'balance_owner', 'created_date',)
 
 
 admin.site.register(Agente, AgenteAdmin)
 
-admin.site.register(UserBalance)
+admin.site.register(UserBalance, BalanceAdmin)

@@ -289,6 +289,14 @@ class Denunciar(models.Model):
     def __str__(self):
         return self.perfil_id
 
+    def get_name(self):
+        per = Perfil.objects.get(id=self.perfil_id)
+        return f'{per.nome} {per.sobrenome}'
+
+    def get_code(self):
+        per = Perfil.objects.get(id=self.perfil_id)
+        return f'{per.code}'
+
 
 
 
@@ -323,6 +331,13 @@ class Image(models.Model):
 
     def __str__(self):
         return "Foto de: {0} {1}".format(self.perfil.nome, self.perfil.sobrenome)
+
+    def get_fullname(self):
+        return f'{self.perfil.nome} {self.perfil.sobrenome}'
+
+    def get_absolute_link(self):
+        return self.image_erociti
+
 
     objects = models.Manager()
     objects_active = PhotoManager()
@@ -371,6 +386,12 @@ class PerfilViewCount(models.Model):
     def __str__(self):
         return "{0} views de: {1} {2}".format(self.views, self.perfil.nome, self.perfil.sobrenome)
 
+    def fullname(self):
+        return "{0} {1}".format(self.perfil.nome, self.perfil.sobrenome)
+
+    def get_views(self):
+        return f'{self.views} hoje'
+
 
 class PerfilNumberClick(models.Model):
 
@@ -379,13 +400,19 @@ class PerfilNumberClick(models.Model):
     clicked = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ['created']
+        ordering = ['-created']
 
     def month(self):
         return self.pub_date.strftime('%m')
 
     def __str__(self):
         return "{0} click de: {1} {2}".format(self.clicked, self.perfil.nome, self.perfil.sobrenome)
+
+    def fullname(self):
+        return "{0} {1}".format(self.perfil.nome, self.perfil.sobrenome)
+
+    def get_clics(self):
+        return f'{self.clicked} hoje'
 
 
 class Transactions(models.Model):

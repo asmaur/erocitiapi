@@ -49,9 +49,16 @@ class UserBalance(models.Model):
     def __str__(self):
         return "Crédito de {0} na conta de {1}".format(self.amount, self.user.username)
 
+    def get_value(self):
+        return f'Crédito de {self.amount}'
+
+    def balance_owner(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
+
     class Meta:
-        verbose_name = 'balance'
-        verbose_name_plural = 'balances'
+        verbose_name = 'Crédito'
+        verbose_name_plural = 'Crédito'
 
 
 @receiver(post_save, sender=User)

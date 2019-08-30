@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 LOCAL_APPS = ['apps.eros', 'apps.account', 'apps.api', 'apps.assina', 'apps.citiapi']
 
 
-THIRD_PARTY_APPS = ['rest_framework', 'rest_framework.authtoken', 'imagekit', 'corsheaders', 'pagseguro',]
+THIRD_PARTY_APPS = ['rest_framework', 'rest_framework.authtoken', 'imagekit', 'corsheaders', 'pagseguro', 'django_cleanup.apps.CleanupConfig']
 
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -270,7 +270,7 @@ if CITIPROD:
     CELERY_BEAT_SCHEDULE = {
         'vencimento-task': {
             'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
-            'schedule': crontab(minute=0, hour='12'),
+            'schedule': crontab(minute=0, hour='11'),
 
         },
         'sem-perfil-task': {
@@ -283,23 +283,44 @@ if CITIPROD:
             'schedule': crontab(minute=0, hour=18,day_of_week=1),
 
         },
+        'remove-unactive-subscription-task': {
+            'task': 'apps.api.v1.tasks.remove_unactive_subscription',
+            'schedule': crontab(minute=0, hour=0),
+
+        },
+        # 'credito-acabando-task': {
+        #   'task': 'apps.api.v1.tasks.credito_acabando_task',
+        #  'schedule': crontab(minute=0, hour=9),
+
+        # },
     }
 else:
     CELERY_BEAT_SCHEDULE = {
 
-        'vencimento-task': {
+       'vencimento-task': {
             'task': 'apps.api.v1.tasks.vencimento_de_plano_task',
-            'schedule': crontab(minute=0, hour='15'),
+           'schedule': crontab(minute=0, hour='15'),
 
-        },
-        'sem-perfil-task': {
-            'task': 'apps.api.v1.tasks.sem_perfil_task',
-            'schedule': crontab(minute=0, hour=18, day_of_week="3"),
+       },
+       'sem-perfil-task': {
+           'task': 'apps.api.v1.tasks.sem_perfil_task',
+           'schedule': crontab(minute=0, hour=18, day_of_week="3"),
 
         },
         'sem-subscription-task': {
             'task': 'apps.api.v1.tasks.sem_subscrition_task',
-            'schedule': crontab(minute=0, hour=18, day_of_week="3"),
+           'schedule': crontab(minute=0, hour=18, day_of_week="3"),
 
         },
+        'remove-unactive-subscription-task': {
+            'task': 'apps.api.v1.tasks.remove_unactive_subscription',
+           'schedule': crontab(minute="*/1"),
+
+        },
+        #'credito-acabando-task': {
+         #   'task': 'apps.api.v1.tasks.credito_acabando_task',
+          #  'schedule': crontab(minute="*/1"),
+
+        #},
+
     }

@@ -15,13 +15,13 @@ def esqueci_senha_task(self, **kwargs):
 
     try:
         data = kwargs
-        mail = Mailer(to=kwargs.get('email'), data=data)
+        mail = Mailer(to=kwargs.get('email'), data=data, temp_html='senhas/email.html', temp_txt='senhas/email.txt')
         mail.noty_senhas()
         return "Senha Enviado"
     except Exception as ex:
         print(ex)
         # dt = datetime.datetime.now(pytz.utc) + datetime.timedelta(seconds=1)
-        self.retry(exc=ex, max_retries=5, countdown=5)
+        self.retry(exc=ex, max_retries=5, countdown=15)
 
 
 
@@ -63,12 +63,12 @@ def noty_sem_perfil(self,id):
 
             ag = Agente.objects.get(id=id)
             data = {"last_name":ag.user.last_name, "email": ag.user.email}
-            mail = Mailer(to=ag.user.email, data=data)
+            mail = Mailer(to=ag.user.email, data=data, temp_html='mail/perfil.html', temp_txt='mail/perfil.txt')
             mail.noty_sem_perfil()
 
         except Exception as ex:
             #print(ex)
-            self.retry(exc=ex, max_retries=5, countdown=10)
+            self.retry(exc=ex, max_retries=5, countdown=33)
 
 
 
@@ -91,11 +91,11 @@ def noty_sem_subscrition(self, id):
     try:
         user = User.objects.get(id=id)
         data = {"last_name":user.last_name, "email": user.email}
-        mail = Mailer(to=user.email, data=data)
+        mail = Mailer(to=user.email, data=data, temp_html='mail/assina.html', temp_txt='mail/assina.txt')
         mail.noty_sem_subs()
     except Exception as ex:
         print(ex)
-        self.retry(exc=ex, max_retries=5, countdown=20)
+        self.retry(exc=ex, max_retries=5, countdown=21)
 
 
 
@@ -123,13 +123,13 @@ def sem_subscrition_task(self,):
 def noty_vencimento(self, **kwargs):
     try:
         #print(kwargs)
-        mail = Mailer(to=kwargs.get('email'), data=kwargs)
+        mail = Mailer(to=kwargs.get('email'), data=kwargs, temp_html='planos/planos.html', temp_txt='planos/planos.txt')
         mail.noty_planos()
         #print("perfil= {0} {1}, user= {2} {3}".format(kwargs.get("nome"), kwargs.get("sobrenome"), kwargs.get("last_name"), kwargs.get("email")))  # .strftime('%B %d %Y'))
 
     except Exception as ex:
         #print(ex)
-        self.retry(exc=ex, max_retries=5, countdown=5)
+        self.retry(exc=ex, max_retries=5, countdown=35)
 
 
 
@@ -142,3 +142,46 @@ def vencimento_de_plano_task(self,):
         for sub in subs:
             noty_vencimento.delay(last_name=sub.user.last_name, email=sub.user.email, nome=sub.perfil.nome, sobrenome=sub.perfil.sobrenome, plano=sub.membership.name)
             #print("Faltam {0} para seu plano vencer: perfil= {1} {2}, user= {3} {4}".format(sub.end_date-timezone.now(), sub.perfil.nome, sub.perfil.sobrenome, sub.user.last_name, sub.user.email)) #.strftime('%B %d %Y'))
+
+
+@task(bind=True)
+def noty_credito_acabando(self, **kwargs):
+    try:
+        # print(kwargs)
+        mail = Mailer(to=kwargs.get('email'), data=kwargs, temp_html="credito/credito.html", temp_txt="credito/credito.txt")
+        mail.noty_credito_acabando()
+        # print("perfil= {0} {1}, user= {2} {3}".format(kwargs.get("nome"), kwargs.get("sobrenome"), kwargs.get("last_name"), kwargs.get("email")))  # .strftime('%B %d %Y'))
+
+    except Exception as ex:
+        # print(ex)
+        self.retry(exc=ex, max_retries=5, countdown=5)
+
+
+@task(bind=True)
+def credito_acabando_task(self):
+    """Checar credito menor do que o minimo, e notificar que o credito está acabando"""
+    try:
+
+        balances = UserBalance.objects.filter(amount__gt=00.00).filter(amount__lte=19.00).filter(user__is_superuser=False).filter(user__is_staff=False).exclude(user__username='Citikey')
+        if(balances):
+            for bal in balances:
+                #print(bal.user.username)
+                noty_credito_acabando.delay(email=bal.user.email, last_name=bal.user.last_name, saldo=bal.amount)
+
+    except Exception as ex:
+        print(ex)
+
+
+@task(bind=True)
+def remove_unactive_subscription(self):
+    try:
+        subs = Subscription.objects.filter(end_date__lt=timezone.now())
+
+        if(subs):
+            for sub in subs:
+                print(sub)
+                sub.delete()
+
+    except Exception as ex:
+        print(ex)
+
