@@ -56,12 +56,18 @@ class LoginViewset(viewsets.ModelViewSet):
 
             try:
                 user = User.objects.get(username=username)
+                user_email = User.objects.get(email=email)
             except:
                 user = None
+                user_email = None
 
             if user:
                 return Response({"message": "Este nome de usúario não está disponível, tente outro"},
                                 status.HTTP_400_BAD_REQUEST)
+            elif user_email:
+                return Response({"message": "Já exite um usúario com este email, Tente recuperar sua senha ou use outro email."},
+                                status.HTTP_400_BAD_REQUEST)
+                                
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.first_name = first_name
