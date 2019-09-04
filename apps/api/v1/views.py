@@ -56,9 +56,16 @@ class LoginViewset(viewsets.ModelViewSet):
 
             try:
                 user = User.objects.get(username=username)
-                user_email = User.objects.get(email=email)
-            except:
+
+            except Exception as ex:
+                #print(ex)
                 user = None
+
+
+            try:
+                user_email = User.objects.get(email=email)
+            except Exception as ex:
+                #print(ex)
                 user_email = None
 
             if user:
@@ -79,7 +86,8 @@ class LoginViewset(viewsets.ModelViewSet):
                 return Response({"message": "Usúario criado com sucesso, Faça seu login na sua conta"}, status.HTTP_201_CREATED)
 
 
-        except:
+        except Exception as ex:
+            print(ex)
             return Response({"message": "Verifique seus dados"}, status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['POST'])
