@@ -14,5 +14,5 @@ django-hosts==3.0
 django-webpack-loader==0.6.0
 django-pagseguro2
 numpy==1.17.0
-celery==4.3.0
+celery==5.2.2
 django-cleanup==4.0.0
